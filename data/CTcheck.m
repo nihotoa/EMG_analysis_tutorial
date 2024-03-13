@@ -1,14 +1,14 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %{
 coded by Naoki Uchida
-last modification : 2024. 02.26(by Ohta)
+last modification : 2024. 03.12(by Ota)
 [function]
 Check cross-talk between EMGs
 (For each trial, find the maximum value between arbitrary EMGs and take their average value.)
 
 [points of improvement(Japanese)]
-筋電にしても3階微分値にしても相互相関関数の絶対値の最大値をとっているがいいのか？
-(その時の位相は保存されていない & 絶対値だったら-1の可能性もある)
+筋電にして�?3階微�?値にしても相互相関関数の絶対値の�?大値をとって�?るが�?�?のか�?
+(そ�?�時�?�位相は保存されて�?な�? & 絶対値�?ったら-1の可能性もあ�?)
 %}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function [Yave,Y3ave] = CTcheck(monkeyname, xpdate_num, save_fold, save_CTR, task, real_name)
