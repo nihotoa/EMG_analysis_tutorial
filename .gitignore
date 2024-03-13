@@ -6,6 +6,7 @@
 !*.csv
 !*.gitignore
 !*/
+!README.md
 
 # .mファイルの隠しファイルを管轄から外す
 ._*
