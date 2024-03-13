@@ -1,11 +1,8 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %{
 % coded by Naoki Uchida
-% last modification : 2021.03.23
-this function if used in runnningEasyfunc.m
-[procedure]
-pre: nothing
-post: nothing
+% last modification : 2024.03.12(by Ota)
+this function is used in runnningEasyfunc.m
 %}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function [EMGs,Tp,Tp3] = makeEasyData_all(monkeyname, real_name, xpdate_num, file_num, save_fold, mE, task)

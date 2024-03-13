@@ -1,3 +1,7 @@
+%{
+This function is used in SYNERGYPLOT.m
+%}
+
 function plotSynergyAll_uchida(fold_name, pcNum,nmf_fold_name, each_plot, save_setting)
 %% set para & get nmf result
 task = 'standard';
