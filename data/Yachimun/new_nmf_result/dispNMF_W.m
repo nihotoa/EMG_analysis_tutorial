@@ -14,7 +14,7 @@
         Yachimun/new_nmf_result/syn_figures/F170516to170526_4/      (if you selected 4days from 170516 to 170526)
 
     As for synergy order data:
-        Yachimun/new_nmf_result/order_tim_list/F170516to170526_47/     (if you selected 4days from 170516 to 170526)
+        Yachimun/new_nmf_result/order_tim_list/F170516to170526_4/     (if you selected 4days from 170516 to 170526)
 
     As for synergy W data (for anova):
         Yachimun/new_nmf_result/W_synergy_data
@@ -127,9 +127,7 @@ zeroBar = zeros(EMG_num,1);
 
 % make folder to save figures
 save_figure_folder_path = fullfile(pwd, 'syn_figures', [monkeyname mat2str(days(1)) 'to' mat2str(days(end)) '_' sprintf('%d',length(days))]);
-if not(exist(save_figure_folder_path))
-    mkdir(fullfile(save_figure_folder_path))
-end
+makefold(save_figure_folder_path);
 
 for i=1:syn_num 
     f1 = figure('Position',[300,250*i,750,400]);
@@ -163,9 +161,7 @@ close all;
 
 % make directory to save synergy_W data & save data.
 if save_WDaySynergy == 1
-    if not(exist('W_synergy_data'))
-        mkdir('W_synergy_data')
-    end
+    makefold('W_synergy_data');
 
     % Changing the structure of an array
     WDaySynergy = cell(1,syn_num);
@@ -233,17 +229,13 @@ close all;
 if save_data == 1
     % save data of synergyW
     save_W_data_dir = fullfile(pwd, 'spatial_synergy_data', synergy_combination);
-    if not(exist(save_W_data_dir))
-        mkdir(save_W_data_dir)
-    end
+    makefold(save_W_data_dir);
     save_W_data_file_name = [term_group '(' num2str(length(days)) 'days)_data.mat'];
     save(fullfile(save_W_data_dir, save_W_data_file_name),"Wt","muscle_name","days")
 
     % save data which is related to the order of synergy
     save_order_data_dir = fullfile(pwd, 'order_tim_list',  [monkeyname mat2str(days(1)) 'to' mat2str(days(end)) '_' sprintf('%d',length(days))]);
-    if not(exist(save_order_data_dir))
-        mkdir(save_order_data_dir);
-    end
+    makefold(save_order_data_dir);
 
     comment = 'this data were made for aveH plot';
     save_order_data_file_name = [monkeyname mat2str(days(1)) 'to' mat2str(days(end)) '_' sprintf('%d',length(days)) '_' sprintf('%d',syn_num) '.mat'];

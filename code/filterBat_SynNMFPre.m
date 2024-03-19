@@ -14,7 +14,7 @@ file name: the file name changes depending on the preprocessing content.
 
 [procedure]
 pre:SAVE4NMF.m
-post:MakeEMGNMFbtc_Oya.m
+post:makeEMGNMFbtc_Oya.m
 
 [Improvement points(Japanaese)]
 

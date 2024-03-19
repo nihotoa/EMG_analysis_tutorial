@@ -69,7 +69,7 @@ easyData_fold_path = fullfile(pwd, realname, 'easyData');
 disp(['ÅyPlease select files(select all ~_standard.mat of all dates you want to analyze (files path: ' realname ' /easyData/)Åz'])
 [Allfiles_S,path] = uigetfile('*.mat', 'Select One or More Files', 'MultiSelect', 'on', easyData_fold_path);
 
-if not(Allfiles_S)
+if isequal(Allfiles_S, 0)
     disp('user press canceled')
     return
 end
@@ -115,10 +115,7 @@ for i = 1:S(2)
 
         % get folder path & make folder
         P_Data_fold_path = fullfile(easyData_fold_path, 'P-DATA');
-        if not(exist(P_Data_fold_path))
-            mkdir(P_Data_fold_path)
-        end
-        
+        makefold(P_Data_fold_path);
         % save data as .mat file
         if saveP == 1
             % dataset for synergy analysis 

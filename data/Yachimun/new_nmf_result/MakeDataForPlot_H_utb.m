@@ -161,9 +161,7 @@ for ii = 1:day_length
        save_data_file_name = [monkeyname '_Syn' sprintf('%d',synergy_num) '_' AllDays{ii} '_Pdata.mat'];
        
        % save data
-       if not(exist(save_data_fold_path))
-           mkdir(save_data_fold_path);
-       end
+       makefold(save_data_fold_path);
        save(fullfile(save_data_fold_path, save_data_file_name), 'monkeyname','xpdate','D',...
                                                          'alignedDataAVE','ResAVE',...
                                                          'AllT','TIME_W','Timing_ave','taskRange');
