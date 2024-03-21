@@ -9,7 +9,7 @@ if iscell(DATA)
     [~, element_num] = size(DATA);
     alignedDATA = cell(element_num,1);
     for ii = 1:element_num
-        [alignedDATA{ii}] = AlignMatrixData(DATA{ii} ,tarLength);
+        [alignedDATA{ii}] = AlignMatrixData(DATA{ii}, tarLength);
     end
 else
    [alignedDATA] = AlignMatrixData(DATA, tarLength);
