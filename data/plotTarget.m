@@ -31,21 +31,9 @@ post解析関連
 ・extract_post_daysって何?
 ・plot figure直前のpostデータの並び替えの2つのループはほぼ同じことをやっているので、関数にして、冗長じゃなくする
 ・(未確認)を修正する
-
-その他
-・evalを使っている部分を修正する => Post関連のところ以外は改善した
-・可能な限り関数化する
-    AlignDatasts, resampleEachTiming.mの部分
-    plotTimingの部分
-・monkeynameをなんとかして消したい
-・plot_timing_figuresが冗長すぎるから改善したい & タスク全体と各タイミング付近とで似通った部分がかなりあるので関数化する
-・(やらなくてもいいかも) 関数内で構造体を解凍する(datastr.sampleをsampleに代入するみたいな感じ)
-・変数名の一部がインクリメントされているものを、cell配列に変更する
-(ex.) data1.Tlist => data{1}.Tlist
-・plot_timing_figuresのsubplotらへんが、timing_num == 4の場合にしか対応していないので、改善する
-・AlignDatasetsとresampleEachTiming.mは共通点が多いので改善する
-・plotTimingのコードが長すぎる
 ・AllDaysNって何?
+・evalを使っている部分を修正する => Post関連のところ以外は改善した
+・monkeynameをなんとかして消したい
 
 [リマインド]
 ・save_dataのセクションを消した。(チュートリアルで必要がないから)
@@ -59,12 +47,17 @@ clear;
 %% set param
 realname = 'Yachimun'; % monkey name 'Yachimun'/'SesekiL'/'Wasa'
 monkeyname = 'F'; % prefix of Raw data(ex) 'Se'/'Ya'/'F'/'Wa' 
-plot_type = 'Synergy';  % the data which you want to plot -> 'EMG' or 'Synergy'
-pColor = 'C';  % select 'K'(black plot) or 'C'(color plot) 【recommend!!】pre-analysis:'K' post-analysis:'C'
-LineW = 1.5; %0.1; % width of plot line 
-normalizeAmp = 1; % normalize Amplitude 
+plot_all = 1; % whether you want to plot figure focus on 'whole task'
+plot_each_timing = 1; % whether you want to plot figure focus on 'each timing'
+plot_type = 'EMG';  % the data which you want to plot -> 'EMG' or 'Synergy'
+pColor = 'K';  % select 'K'(black plot) or 'C'(color plot) 【recommend!!】pre-analysis:'K' post-analysis:'C'
+normalizeAmp = 0; % normalize Amplitude a
 YL = Inf; % (if nomalize Amp == 0) ylim of graph
+LineW = 1.5; %0.1;a % width of plot line 
 synergy_order = [3,1,4,2];  % (pre1,2,3,4)に対応するpostのsynergy(Yachimun:[4,2,1,3], Seseki:[3,1,4,2])
+timing_name_list = ["Lever1 on ", "Lever1 off ", "Lever2 on ", "Lever2 off"]; % this is used for titling
+row_num = 4; % how many rows to display in one subplot figure
+fig_type_array = {'stack', 'std'}; % you don't  need to change
 
 %% code section
 
@@ -99,10 +92,10 @@ end
 [Allfiles_S, select_folder_path] = getFileName(plot_type, realname);
 [~, session_num] = size(Allfiles_S);
 
-Allfiles = strrep(Allfiles_S,'_Pdata.mat',''); % ok!!(フォルダ名に使うだけ)
-AllDays = strrep(strrep(Allfiles, monkeyname, ''), '_', ''); % sgtitleに使うだけ
 
 % 未確認
+Allfiles = strrep(Allfiles_S,'_Pdata.mat',''); % ok!!(フォルダ名に使うだけ)
+AllDays = strrep(strrep(Allfiles, monkeyname, ''), '_', ''); % sgtitleに使うだけ(単純な日付が欲しい)
 if pColor == 'C'
     AllDaysN = strrep(AllDays,'Syn4','');
     AllDaysN =str2double(AllDaysN');
@@ -116,14 +109,15 @@ for i = 1:session_num
     % load parameters
     load_file_path = fullfile(select_folder_path, Allfiles_S{i});
     load(load_file_path, "AllT", "TIME_W", "D" )
-
+    
     if i == 1
+        % Create empty array to store data from each timing
         timing_num = sum(startsWith(fieldnames(D), 'trig'));
-        % Create empty array to store data from entire trial
+        % for trial
         AllT_AVE = 0;
         Pall.Tlist = zeros(session_num, 1);
-
-        % Create empty array to store data from each timing
+        
+        % for each timing
         Ptrig = cell(timing_num-1, 1);
         for jj = 1:(timing_num-1)
             D_AVE.(['timing' num2str(jj)]) = 0;
@@ -132,46 +126,46 @@ for i = 1:session_num
     end
 
     % store the data from each session
-    %AllT
+    % for trial
     AllT_AVE = (AllT_AVE*(i-1) + AllT)/i; 
     Pall.Tlist(i,1) = AllT;  
     
-    % each timing
+    % for each timing
     for jj = 1:(timing_num-1)
         original_data = D_AVE.(['timing' num2str(jj)]);
         added_data = D.(['Ld' num2str(jj)]);
         D_AVE.(['timing' num2str(jj)]) = (original_data * (i-1) + added_data)/i;
         Ptrig{jj}.Tlist(i,1) = added_data;
     end
-
 end
 
-%% Perform time normalisation based on the session average of the acquired data lengths.
+%% Perform time normalization based on the session average of the acquired data lengths.
 
-% Create empty structure to store data(entire)
+% Create empty structure to store data
+% for trial
 Pall.AllT_AVE = round(AllT_AVE);
 Pall.plotData_sel = cell(session_num,1);
 
-% Create empty structure to store data(each timing)
+% for each timing
 for ii = 1:(timing_num-1)
     Ptrig{ii}.AllT_AVE = round(D_AVE.(['timing' num2str(ii)]));
     Ptrig{ii}.plotData_sel = cell(session_num,1);
 end
 
-
-%%%  for trial  %%%
+% store the data from each session
+% for trial
 for j = 1:session_num
     % load the data of the average activity pattern of each synergy (ormuscle) for this session
     load(fullfile(select_folder_path, Allfiles_S{j}), 'alignedDataAVE');
 
     if j == 1
-        element_num = length(alignedDataAVE); % synergy_num or EMG_num
+        element_num = length(alignedDataAVE);
     end
     
     % Eliminate differences in length between sessions (perform time normalisation).
     plotData = AlignDatasets(alignedDataAVE, Pall.AllT_AVE); 
 
-    if normalizeAmp
+    if normalizeAmp == 1
         % divide by the maximum value of each element
         for mm = 1:element_num          
            plotData{mm} = plotData{mm} / max(plotData{mm});
@@ -180,15 +174,14 @@ for j = 1:session_num
     Pall.plotData_sel{j,1} = plotData;
 end
 
-%%%  for each timing  %%%
+% add data which is related to 'mean+std' to 'Pall' structure
+[Pall] = makeSDdata(Pall, session_num, element_num);
+
+% for each timing
 for ii = 1:(timing_num-1)
     [Ptrig{ii}] = resampleEachTiming(Allfiles_S, Ptrig{ii}, ii, normalizeAmp, select_folder_path, element_num);
-end
 
-
-%% make data for (mean + std) plot
-[Pall] = makeSDdata(Pall, session_num, element_num);
-for ii = 1:(timing_num-1)
+    % add data which is related to 'mean+std' to 'Ptrig{ii}' structure
     [Ptrig{ii}] = makeSDdata(Ptrig{ii}, session_num, element_num);
 end
 
@@ -216,25 +209,25 @@ end
 % end
 
 %% specify colormap for plot(P.PostDaysを未確認), ここじゃなくてよくねーか?
-if strcmp(pColor, 'C')
-    switch plot_type
-        case 'EMG'
-            [P.PostDays] = extract_post_days(PreDays);
-        case 'Synergy'
-            P.PostDays = AllDaysN;
-    end
-
-    switch realname
-        case 'SesekiL'
-            color_id = 2;
-        otherwise
-            color_id = 1;
-    end
-    PostDays = P.PostDays;
-    Sp = length(PostDays);
-    Csp = zeros(Sp, 3);
-    Csp(:, color_id) = ones(Sp, 1).*linspace(0.3, 1, Sp)';
-end
+% if strcmp(pColor, 'C')
+%     switch plot_type
+%         case 'EMG'
+%             [P.PostDays] = extract_post_days(PreDays);
+%         case 'Synergy'
+%             P.PostDays = AllDaysN;
+%     end
+% 
+%     switch realname
+%         case 'SesekiL'
+%             color_id = 2;
+%         otherwise
+%             color_id = 1;
+%     end
+%     PostDays = P.PostDays;
+%     Sp = length(PostDays);
+%     Csp = zeros(Sp, 3);
+%     Csp(:, color_id) = ones(Sp, 1).*linspace(0.3, 1, Sp)';
+% end
 
 %% define save folder path (which is stored all data & figures)
 save_fold_path = fullfile(pwd, realname, 'easyData', 'P-DATA', [ Allfiles{1} 'to' Allfiles{end} '_' sprintf('%d',session_num)]);
@@ -242,8 +235,8 @@ makefold(save_fold_path);
 
 %% plot figure
 
-%% 1. plot all taks range data(all muscle) -> plot range follows 'plotWindow'
-
+% comple the data needed to embelish the figure
+% load taskRange
 switch plot_type
     case 'EMG' 
         load(fullfile(select_folder_path, Allfiles_S{1}), 'taskRange', 'EMGs');
@@ -253,207 +246,118 @@ switch plot_type
 end
 Pall.x = linspace(taskRange(1), taskRange(2), Pall.AllT_AVE);
 
-% generate figure 
-f_stack = figure('position', [100, 100, 1000, 1000]);
-if strcmp(pColor, 'K')
-    f_std = figure('position', [100, 100, 1000, 1000]);
+% add variables which is used in plot function in 'data_struct'
+data_str = struct();
+use_variable_name_list = {'element_num', 'session_num', 'pColor', 'LineW', 'normalizeAmp', 'YL', 'EMGs', 'plot_type', 'Csp', 'PostDays', 'AllDaysN', 'row_num', 'timing_num'};
+
+% store data in a struct
+not_exist_variables = {};
+for jj = 1:length(use_variable_name_list)
+    variable_name = use_variable_name_list{jj};
+    try
+        data_str.(variable_name) = eval(variable_name);
+    catch
+        not_exist_variables{end+1} = variable_name;
+    end
 end
 
-% make multiple figures (stack & (mean + std))
-for m = 1:element_num
-    % make stack figure
-    figure(f_stack)
-    switch plot_type
-        case 'EMG'
-            subplot(ceil(element_num / 4),4,m) %plot data in one figure   
-        case 'Synergy'
-            subplot(ceil(element_num / 2),2,m) %plot data in one figure   
-    end
-    hold on
+% display not found variable in 'use_variable_name_list'
+disp(['(' char(join(not_exist_variables, ', ')) ') is not found'])
 
-    for d = 1:session_num
-        switch pColor
-            case 'K'
-                try
-                    plot(Pall.x,Pall.plotData_sel{d,1}{m,1}, 'k' ,'LineWidth',LineW);
-                    max_value = max(Pall.plotData_sel{d,1}{m,1});
-                catch
-                    plot(Pall.x,Pall.plotData_sel{d,1}(m,:),'k','LineWidth',LineW);
-                    max_value = max(Pall.plotData_sel{d,1}(m,:));
-                end
-            case 'C'
-                try
-                    plot(Pall.x,Pall.plotData_sel{d,1}{m,1},'Color',Csp(d,:),'LineWidth',LineW);
-                    max_value = max(Pall.plotData_sel{d,1}{m,1});
-                catch
-                    plot(Pall.x,Pall.plotData_sel{d,1}(m,:),'Color',Csp(d,:),'LineWidth',LineW);
-                    max_value = max(Pall.plotData_sel{d,1}(m,:));
-                end
-        end
-    end
+%% 1. plot all taks range data(all muscle) -> plot range follows 'plotWindow'
 
-    % decoration
+if plot_all == 1
+    % save_setting(determine file name for figure)
+    save_figure_name =  ['All_' plot_type '(whole task)'];
     if normalizeAmp == 1
-        ylim([0 1]);
-    else
-        ylim([0 YL]);
+        save_figure_name = [save_figure_name '_normalized'];
     end
-    xlim([-25 105]); %narrow the range by following 'plotWindow'
-    xline(0, 'color','b', 'LineWidth', LineW)
-    xline(100, 'color', 'b', 'LineWidth', LineW)
-    xlabel('task range[%]')
+    
+    % add plotWindow & Pdata to 'data_str'  
+    data_str.Pdata = Pall;
+    data_str.plotWindow = [-25 105];
 
-    if normalizeAmp == 0
-        ylabel('Amplitude[uV]')
-    end
+    % create an array identifying 'fig_type'
+    for idx = 1:length(fig_type_array)
+        fig_type = fig_type_array{idx};
 
-    switch plot_type
-        case 'EMG'
-            title(EMGs{m}, 'FontSize', 20)
-        case 'Synergy'
-            title(['Synergy' num2str(m)], 'FontSize', 20)
-    end
-   
-    % make (mean+std) figure
-    if pColor=='K'
-        figure(f_std)
-        switch plot_type
-            case 'EMG'
-                subplot(ceil(element_num/4),4,m) %plot data in one figure
-            case 'Synergy'
-                subplot(ceil(element_num/2),2,m) %plot data in one figure
-        end
-
-        % paint the background of std
-        sd = Pall.SD{m};
-        y = Pall.AVE{m};
-        xconf = [Pall.x Pall.x(end:-1:1)];
-        yconf = [y+sd y(end:-1:1)-sd(end:-1:1)];
-        hold on;
-        fi = fill(xconf,yconf,'k');
-        fi.FaceColor = [0.8 0.8 1];       % make the filled area pink
-        fi.EdgeColor = 'none';            % remove the line around the filled area
-        
-        % plot average pattern
-        plot(Pall.x,y,'k','LineWidth',LineW);
-
-        % decoration
-        xline(0,'color','b','LineWidth',LineW)
-        xline(100,'color','b','LineWidth',LineW)
-        xlim([-25 105]); %narrow the range by following 'plotWindow'
-        xlabel('task range[%]')
-        if normalizeAmp == 0
-            ylabel('Amplitude[uV]')
-        end
-
-        switch plot_type
-            case 'EMG'
-                title(EMGs{m}, 'FontSize', 20)
-            case 'Synergy'
-                title(['Synergy' num2str(m)], 'FontSize', 20)
-        end
-        hold off;
-        sgtitle(['Average ' plot_type ' in task(from' num2str(AllDays{1}) 'to' num2str(AllDays{end}) '-' num2str(length(AllDays)) ')'], 'FontSize', 25)
+        % generate figure 
+        f.fig1 = figure('position', [100, 100, 1000, 1000]);
+    
+        % plot figure
+        f = plot_figures(f, data_str, 'whole_task', fig_type);
+        sgtitle([fig_type ' ' plot_type ' in task(from' num2str(AllDays{1}) 'to' num2str(AllDays{end}) '-' num2str(length(AllDays)) ')'], 'FontSize', 25)
+    
+        % save figure
+        saveas(gcf, fullfile(save_fold_path, [save_figure_name '_' fig_type '.fig']))
+        saveas(gcf, fullfile(save_fold_path, [save_figure_name '_' fig_type '.png']))
+        close all;
     end
 end
-
-switch normalizeAmp
-    case 0
-        nomalize_str = '';
-    case 1
-        nomalize_str = '_normalized';
-end
-figure(f_stack)
-sgtitle(['Stack ' plot_type ' in task(from' num2str(AllDays{1}) 'to' num2str(AllDays{end}) '-' num2str(length(AllDays)) ')'], 'FontSize', 25)    
-
-% save figures(変数の中身が違うだけで、実行しているコードは同じだから、まとめる)
-save_figure_name =  ['All_' plot_type '(whole task)' nomalize_str];
-figure_type = '_stack';
-
-saveas(gcf, fullfile(save_fold_path, [save_figure_name figure_type '.fig']))
-saveas(gcf, fullfile(save_fold_path, [save_figure_name figure_type  '.png']))
-if strcmp(pColor, 'K')
-    figure(f_std)
-    figure_type = '_std';
-
-    saveas(gcf, fullfile(save_fold_path, [save_figure_name figure_type '.fig']))
-    saveas(gcf, fullfile(save_fold_path, [save_figure_name figure_type '.png']))
-end
-close all;
-
 
 %% plot EMG(or Synergy) which is aligned in each timing(timing1~timing4)
-% decide the number of created figures (4 muscles(or Synergies) per figure)
-figure_num = ceil(element_num/4); %plot 4 muscle's EMG   
 
-% Create a struct array for figure to plot
-figure_str = struct;
-for ii = 1:figure_num
-    figure_str.(['fig' num2str(ii)]) = figure("position", [100, 100, 1000, 1000]);
-    if strcmp(pColor, 'K') % prepare for the figure of mean+-std
-        figure_str.(['fig' num2str(ii) '_SD']) = figure("position", [100, 100, 1000, 1000]);
-    end
-end
-
-% if Yachimun
-timing_name_list = ["Lever1 on ", "Lever1 off ", "Lever2 on ", "Lever2 off"];
-
-for timing_id = 1:timing_num
-    timing_name = timing_name_list(timing_id);
-    if or(timing_id==1, timing_id==timing_num)
-        Pdata = Pall; % Data(EMG or Synergy) to be plotted
-    else
-        % add 'x' to 'Ptrig' struct
-        Pdata = Ptrig{timing_id};
-        Pdata.x =  linspace(-D.(['Range' num2str(timing_id)])(1), D.(['Range' num2str(timing_id)])(2), Pdata.AllT_AVE);
-    end
-    plotWindow = plotWindow_cell{timing_id}; % plotWindow at specified timing
+if plot_each_timing == 1
+    % decide the number of created figures (4 muscles(or Synergies) per figure)
+    figure_num = ceil(element_num/row_num); 
     
-    % collect data used for analysis into 'data_str' (struct array) 
-    data_str = struct();
-    use_variable_name_list = {'figure_str', 'timing_id', 'timing_name', 'element_num', 'session_num', 'pColor', 'Pdata', 'LineW', 'normalizeAmp', 'YL', 'plotWindow', 'EMGs', 'plot_type', 'Csp', 'PostDays', 'AllDaysN'};
-
-    % store data in a struct
-    not_exist_variables = {};
-    for jj = 1:length(use_variable_name_list)
-        variable_name = use_variable_name_list{jj};
-        try
-            data_str.(variable_name) = eval(variable_name);
-        catch
-            not_exist_variables{end+1} = variable_name;
+    % Create a struct array for figure to plot
+    figure_str = struct;
+    for idx = 1:length(fig_type_array)
+        fig_type = fig_type_array{idx};
+        figure_str.(fig_type) = struct;
+        for ii = 1:figure_num
+            figure_str.(fig_type).(['fig' num2str(ii)]) = figure("position", [100, 100, 1000, 1000]);
         end
     end
-    disp(['(' char(join(not_exist_variables, ', ')) ') is not found'])
 
-    % plot figures
-    plot_timing_figures(figure_str, data_str, timing_num)
-end
+    for timing_id = 1:timing_num
+        % load activity data and window info around timing to be focused
+        timing_name = timing_name_list(timing_id);
+        if or(timing_id==1, timing_id==timing_num)
+            Pdata = Pall;
+        else
+            % add 'x' to 'Ptrig' struct
+            Pdata = Ptrig{timing_id};
+            Pdata.x =  linspace(-D.(['Range' num2str(timing_id)])(1), D.(['Range' num2str(timing_id)])(2), Pdata.AllT_AVE);
+        end
+        plotWindow = plotWindow_cell{timing_id}; % plotWindow at specified timing
+        
+        % add some variables (which is changed in loop) to 'data_str'
+        data_str.timing_id = timing_id;
+        data_str.timing_name = timing_name;
+        data_str.plotWindow = plotWindow;
+        data_str.Pdata = Pdata;
 
-% save figure
-switch pColor
-    case 'K'
-        added_info = 'monochrome';
-    case 'C'
-        added_info = 'color';
-end
-
-for ii = 1:figure_num
-    figure(figure_str.(['fig' num2str(ii)]));
-    save_figure_name =  ['each_timing_stack_' num2str(ii) '_' added_info nomalize_str];
-
-    saveas(gcf, fullfile(save_fold_path, [save_figure_name '.fig']))
-    saveas(gcf, fullfile(save_fold_path, [save_figure_name '.png']))
-
-    if strcmp(pColor, 'K') % prepare for the figure of mean+-std
-        figure(figure_str.(['fig' num2str(ii) '_SD']));
-        saveas(gcf, fullfile(save_fold_path, [save_figure_name '_std.fig']))
-        saveas(gcf, fullfile(save_fold_path, [save_figure_name '_std.png']))
+        % plot figures
+        for idx = 1:length(fig_type_array)
+            fig_type = fig_type_array{idx};
+            figure_str.(fig_type) = plot_figures(figure_str.(fig_type), data_str, 'each_timing', fig_type);
+        end
     end
-end
-close all;
 
-% save data
-if normalizeAmp
+    % save_figure
+    switch pColor
+        case 'K'
+            added_info = 'monochro';
+        case 'C'
+            added_info = 'color';
+    end
+
+    for ii = 1:figure_num
+        save_figure_name =  ['each_timing_figure' num2str(ii) '_' added_info];
+        for idx = 1:length(fig_type_array)
+            fig_type = fig_type_array{idx};
+            figure(figure_str.(fig_type).(['fig' num2str(ii)]));
+            saveas(gcf, fullfile(save_fold_path, [save_figure_name '_' fig_type '.fig']))
+            saveas(gcf, fullfile(save_fold_path, [save_figure_name '_' fig_type '.png']))
+        end
+    end
+    close all;
+end
+    
+%% save data
+if normalizeAmp == 1
     save(fullfile(save_fold_path, 'alignedEMG_data(normalizeAmp).mat'), 'Pall', 'Ptrig')
 else
     save(fullfile(save_fold_path, 'alignedEMG_data.mat'), 'Pall', 'Ptrig')
@@ -462,7 +366,7 @@ end
 
 %% define local function
 
-%% make PostDays
+% make PostDays
 function [PostDays] = extract_post_days(PreDays)
     files_struct = dir('*_Pdata.mat');
     file_names = {files_struct.name};
@@ -472,94 +376,6 @@ function [PostDays] = extract_post_days(PreDays)
         if ~ismember(str2double(match{1}), PreDays)
             PostDays(count) = str2double(match{1});
             count = count + 1;
-        end
-    end
-end
-
-%% plot each timing figures
-function plot_timing_figures(figure_str, data_str, timing_num)
-    % (if timing_id == last_timing) change center persentage from 100 to 0
-    if data_str.timing_id == timing_num
-        data_str.Pdata.x = data_str.Pdata.x - 100;
-        data_str.plotWindow = data_str.plotWindow - 100;
-    end
-
-    for m = 1:data_str.element_num%EMG_num(or Synergy_num) loop 
-        plot_target = ceil(m/4); % figure number to plot
-        figure(figure_str.(['fig' num2str(plot_target)]))
-        % define subplot location
-        k = m - 4*(plot_target-1) ;
-        subplot_location = 4*(k-1) + data_str.timing_id; % if
-        subplot(4, 4, subplot_location);
-        hold on
-        for d = 1:data_str.session_num%file=num loop
-            switch data_str.pColor
-                case 'C'
-                    try
-                        plot(data_str.Pdata.x,cell2mat(data_str.Pdata.plotData_sel{d,1}(m,:)),'Color',data_str.Csp(d,:),'LineWidth',data_str.LineW);
-                    catch
-                        plot(data_str.Pdata.x,data_str.Pdata.plotData_sel{d,1}(m,:),'Color',data_str.Csp(d,:), 'LineWidth',data_str.LineW);
-                    end
-                case 'K'
-                    try
-                        plot(data_str.Pdata.x,cell2mat(data_str.Pdata.plotData_sel{d,1}(m,:)),'k','LineWidth',data_str.LineW);
-                    catch
-                        plot(data_str.Pdata.x,data_str.Pdata.plotData_sel{d,1}(m,:),'k','LineWidth',data_str.LineW);
-                    end
-            end
-        end
-        % decoration
-        xline(0,'color','r','LineWidth',data_str.LineW)
-        hold off
-        if data_str.normalizeAmp == 1
-            ylim([0 1]);
-        else
-            ylim([0 data_str.YL]);
-        end
-        xlim(data_str.plotWindow);
-        xlabel('task range[%]')
-        if data_str.normalizeAmp == 0
-            ylabel('Amplitude[uV]')
-        end
-        switch data_str.plot_type
-            case 'EMG'
-                title([data_str.timing_name data_str.EMGs{m}])
-            case 'Synergy'
-                title([data_str.timing_name 'Synergy' num2str(m)])
-        end
-
-        % plot mean+-std
-        if data_str.pColor=='K'
-            % focus on FigTrigSD
-            figure(figure_str.(['fig' num2str(plot_target) '_SD']))
-            sd = data_str.Pdata.SD{m};
-            y = data_str.Pdata.AVE{m};
-            xconf = [data_str.Pdata.x data_str.Pdata.x(end:-1:1)];
-            yconf = [y+sd y(end:-1:1)-sd(end:-1:1)];
-            subplot(4, 4, subplot_location);
-            hold on;
-            fi = fill(xconf,yconf,'k');
-            fi.FaceColor = [0.8 0.8 1];       % make the filled area pink
-            fi.EdgeColor = 'none';            % remove the line around the filled area
-            plot(data_str.Pdata.x,y,'k','LineWidth',data_str.LineW);
-            % decoration
-            xline(0,'color','r','LineWidth',data_str.LineW)
-            xlabel('task range[%]')
-            hold off;
-            if data_str.normalizeAmp == 1
-                ylim([0 1]);
-            else
-                ylim([0 data_str.YL]);
-                ylabel('Amplitude[uV]')
-            end
-            xlim(data_str.plotWindow);
-            % title
-            switch data_str.plot_type
-                case 'EMG'
-                    title([data_str.timing_name data_str.EMGs{m}])
-                case 'Synergy'
-                    title([data_str.timing_name 'Synergy' num2str(m)])
-            end
         end
     end
 end
