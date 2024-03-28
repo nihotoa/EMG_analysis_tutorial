@@ -22,14 +22,15 @@ In order to use the function 'resample', 'signal processing toolbox' must be ins
 
 [Improvement points(Japanaese)]
 ・Kを用いてtestデータを連結させるところがkf=4の前提で書かれているので改善する
+・タイミングの数が4つである前提で書かれているので、改善する(plotEasyData_utbとかなり似ている)
 ・timを求める際のダウンサンプリング後のサンプリング周波数が100Hzの前提で書かれているので改善する
-・alignDataと,alignDataEXはmakeEasyData_allと全く同じものを使っているので、ローカル関数ではなくて、独立した関数として作って、
+・alignDataと,alignDataEXはplotEasyData_utbと全く同じものを使っているので、ローカル関数ではなくて、独立した関数として作って、
 それを読み込んで使うように変更する
 %}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% set param
 monkeyname = 'F';  % Name prefix of the folder containing the synergy data for each date
-synergy_type = 'pre';  % Whether to analyse pre or post synergies. ('pre' / 'post')
+synergy_type = 'post';  % Whether to analyse pre or post synergies. ('pre' / 'post')
 % group_num = 2;
 synergy_num = 4; % number of synergy you want to analyze
 save_data = 1; % whether you want to save data (basically, set 1)
@@ -122,7 +123,7 @@ for ii = 1:day_length
     EasyData_fold_path = fullfile(monkey_dir_path, 'easyData', Allfiles_S{ii});
     EasyData_file_name = [Allfiles{ii} '_EasyData.mat'];
    Timing = load(fullfile(EasyData_fold_path, EasyData_file_name),'Tp','Tp3','SampleRate'); % load the timing data of each trial
-   tim = floor(Timing.Tp./(Timing.SampleRate/100)); %floor:切り捨て,タイミング信号を100Hzにダウンサンプリング
+   tim = floor(Timing.Tp./(Timing.SampleRate/100)); % down sample (to 100Hz)
    [trial_num, ~] = size(tim);
    pre_per = 50; % How long do you want to see the signals before 'lever1 on' starts.
    post_per = 50; % How long do you want to see the signals after 'lever2 off' starts.
@@ -161,9 +162,7 @@ for ii = 1:day_length
        save_data_file_name = [monkeyname '_Syn' sprintf('%d',synergy_num) '_' AllDays{ii} '_Pdata.mat'];
        
        % save data
-       if not(exist(save_data_fold_path))
-           mkdir(save_data_fold_path);
-       end
+       makefold(save_data_fold_path);
        save(fullfile(save_data_fold_path, save_data_file_name), 'monkeyname','xpdate','D',...
                                                          'alignedDataAVE','ResAVE',...
                                                          'AllT','TIME_W','Timing_ave','taskRange');
@@ -327,11 +326,12 @@ for m = 1:EMG_num
     end
 
     Re.slct = cell(5,1);
-    [tD1, Re.slct{1}]=AlignDatasets(tD1,round(TIME_W*sum(per1)),'row');
-    [tD2, Re.slct{2}]=AlignDatasets(tD2,round(TIME_W*sum(per2)),'row');
-    [tD3, Re.slct{3}]=AlignDatasets(tD3,round(TIME_W*sum(per3)),'row');
-    [tD4, Re.slct{4}]=AlignDatasets(tD4,round(TIME_W*sum(per4)),'row');
-    [tDTask, Re.slct{5}]=AlignDatasets(tDTask,round(TIME_W*sum(pertask)),'row');
+    [tD1]=AlignDatasets(tD1,round(TIME_W*sum(per1)));
+    [tD2]=AlignDatasets(tD2,round(TIME_W*sum(per2)));
+    [tD3]=AlignDatasets(tD3,round(TIME_W*sum(per3)));
+    [tD4]=AlignDatasets(tD4,round(TIME_W*sum(per4)));
+    [tDTask]=AlignDatasets(tDTask,round(TIME_W*sum(pertask)));
+
     Re.tData1{m} = cell2mat(tD1);
     Re.tData1_AVE{m} = mean(Re.tData1{m});
     Re.tData2{m} = cell2mat(tD2);

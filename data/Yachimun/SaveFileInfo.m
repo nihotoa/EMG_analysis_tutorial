@@ -8,13 +8,16 @@
 get the information which is used for merge data
 
 [Saved data location]
-location: Yachimun/easyData
+location: Yachimun/easyData/
 file name: ~_standard.mat (ex.) F170516_standard.mat
 
 [procedure]
 pre: Nothing
 post : (if you want to conduct synergy analysis) SAVE4NMF.m
        (if you want to conduct EMG analysis) runnningEasyfunc.m
+
+[correction Point]
+made 'makefold.m' & add this function berore saving
 %}
 clear;
 %% set param
@@ -43,6 +46,7 @@ for tarN = 1:length(tarsessions)
     tarfiles = [str2double(temp_start{2}) str2double(temp_end{2})];
     fileInfo.file_num = [tarfiles(1),tarfiles(2)];
     % save data
+    makefold(common_save_fold_path)
     save(fullfile(common_save_fold_path, [monkeyname num2str(tarsessions(tarN)) '_' taskname '.mat']), 'fileInfo')
 end
 

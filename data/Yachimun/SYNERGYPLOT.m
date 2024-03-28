@@ -13,30 +13,28 @@ file name:
 
 [procedure]
 pre: makeEMGNMF_btcOya.m
-post: dispNMF_W (path:
-EMG_analysis/data/Yachimun/new_nmf_result/dispNMF_W.m), (This file is not yet fully described)
+post: dispNMF_W (path:EMG_analysis/data/Yachimun/new_nmf_result/dispNMF_W.m), (This file is not yet fully described)
 
 [caution!!]
-In order to complete this function, in addtion to the analysis flow of synergy analysis, it is necessary to finish the flow up to runningEasyfunc.m of EMG analysis
+In order to complete this function, in addtion to the analysis flow of synergy analysis, it is necessary to finish the flow up to 'runningEasyfunc.m' of EMG analysis
 
 [Improvement points(Japanaese)]
 注意点: タイミングデータの取得のために, EMG_analysisのフローをrunnningEasyfuncまで行う必要がある
-disp_NMFの説明が十分じゃないことを, procedureの中で書いているので, 編集したらその部分を消す
+existを使わないようにする
 %}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 clear;
 %% set param
 monkeyname = 'F'; % initials that each monkey has uniquery
 synergy_num_list = [4]; % which synergy number of synergies to plot
-type = '_filtNO5';% _filt5 means'both' direction filtering used 'filtfilt' function (don't need to change)
 nmf_fold_name = 'new_nmf_result';
 each_plot = 0; % whether you want to plot spatial_pattern figure for each synergy
 
 % save_setting
-save_setting.save_fig_W = 1; % whether you want to save synergy
-save_setting.save_fig_H = 1;
-save_setting.save_fig_r2 = 1; 
-save_setting.save_data = 1;
+save_setting.save_fig_W = 1; % whether you want to save figure of spatial pattern of synergy(synergy W)
+save_setting.save_fig_H = 1; % whether you want to save figure of temporal pattern of synergy(synergy H)
+save_setting.save_fig_r2 = 1; % whether you want to save figure of VAF of synergy
+save_setting.save_data = 1; % whether you want to save data about synergy W & synergy H
 
      
 %% code section

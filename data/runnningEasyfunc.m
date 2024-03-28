@@ -30,7 +30,7 @@ file_name: ~_Pdata.mat:  contains some data for synergy analysis (timing_data, t
 
 [procedure]
 pre: SaveFileInfo.m
-post: plotTarget.m
+post: plotTarget.m(EMG analysis) or SYNERGYPLOT.m(EMG analysis)
 
 [caution!!]
 Sometimes the function 'uigetfile' is not executed and an error occurs
@@ -38,6 +38,8 @@ Sometimes the function 'uigetfile' is not executed and an error occurs
 
 [Improvement points(Japanaese)]
 makeEasyData_all/makeEasyTiming内のSu, Seの条件分岐の意味を把握していない => Sesekiで試す or チュートリアル用のリポジトリを作った後に消す
+・この関数自体も、この関数の中で使われている関数も,タイミングの数が4つであることを前提としているので、可変長にも対応できるように変更する
+・この関数の中で使われている関数の中で使われているplotEasyData_utbとMakeDataForPlot_H_utb.mが激似なので改善する
 %}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 clear 
@@ -69,7 +71,7 @@ easyData_fold_path = fullfile(pwd, realname, 'easyData');
 disp(['【Please select files(select all ~_standard.mat of all dates you want to analyze (files path: ' realname ' /easyData/)】'])
 [Allfiles_S,path] = uigetfile('*.mat', 'Select One or More Files', 'MultiSelect', 'on', easyData_fold_path);
 
-if not(Allfiles_S)
+if isequal(Allfiles_S, 0)
     disp('user press canceled')
     return
 end
@@ -115,10 +117,7 @@ for i = 1:S(2)
 
         % get folder path & make folder
         P_Data_fold_path = fullfile(easyData_fold_path, 'P-DATA');
-        if not(exist(P_Data_fold_path))
-            mkdir(P_Data_fold_path)
-        end
-        
+        makefold(P_Data_fold_path);
         % save data as .mat file
         if saveP == 1
             % dataset for synergy analysis 
