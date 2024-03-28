@@ -1,12 +1,16 @@
 %{
 セッション(日付)ごとに1トライアルの平均の長さが違うので、resampleして(時間正規化して)セッション間の長さを統一するための関数
+使われている関数:
+plotEasyData_utb.m(runningEasyfuncの中で使われている)
+MakeDataForPlot_H_utb
+plotTarget.m
 %}
 function [alignedDATA]=AlignDatasets(DATA, tarLength)
 %{
 explanation: change the construction of data & resample data(adjast to 'tarLength')
 %}
 if iscell(DATA)
-    [~, element_num] = size(DATA);
+    element_num = max(size(DATA));
     alignedDATA = cell(element_num,1);
     for ii = 1:element_num
         [alignedDATA{ii}] = AlignMatrixData(DATA{ii}, tarLength);

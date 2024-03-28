@@ -16,7 +16,7 @@
 [caution!!]
 1. Sometimes the function 'uigetfile' is not executed and an error occurs
 -> please reboot MATLAB
-
+2. Do not select date belong to 'PreDays' when you use pColor as 'C'
 
 [procedure]
 pre : MakeDataForPlot_H_utb.m or runnningEasyfunc.m
@@ -26,16 +26,7 @@ pre : MakeDataForPlot_H_utb.m or runnningEasyfunc.m
 ・日本語部分を無くす
 ・README.mdのフォーマットに従ってドキュメンテーションを書く
 
-post解析関連
-・pre初日のシナジーと,post初日のシナジーの入れ替えを自動で行う様に設定する(dispNMF_Wの方でも同様に)
-・extract_post_daysって何?
-・plot figure直前のpostデータの並び替えの2つのループはほぼ同じことをやっているので、関数にして、冗長じゃなくする
-・(未確認)を修正する
-・AllDaysNって何?
-・evalを使っている部分を修正する => Post関連のところ以外は改善した
-・monkeynameをなんとかして消したい
-
-[リマインド]
+[Remind(Japanese)]
 ・save_dataのセクションを消した。(チュートリアルで必要がないから)
 ・EMG_maxみたいなやつを消した(ローランドさんがやってくれたからやる必要ない)
 ・forHaraを消した(plot_figure_type, eliminate_musclesと,local関数のplot_timing_figures2を消した)
@@ -49,12 +40,11 @@ realname = 'Yachimun'; % monkey name 'Yachimun'/'SesekiL'/'Wasa'
 monkeyname = 'F'; % prefix of Raw data(ex) 'Se'/'Ya'/'F'/'Wa' 
 plot_all = 1; % whether you want to plot figure focus on 'whole task'
 plot_each_timing = 1; % whether you want to plot figure focus on 'each timing'
-plot_type = 'EMG';  % the data which you want to plot -> 'EMG' or 'Synergy'
-pColor = 'K';  % select 'K'(black plot) or 'C'(color plot) 【recommend!!】pre-analysis:'K' post-analysis:'C'
+plot_type = 'Synergy';  % the data which you want to plot -> 'EMG' or 'Synergy'
+pColor = 'K';  % select 'K'(black plot) or 'C'(color plot) 
 normalizeAmp = 0; % normalize Amplitude a
 YL = Inf; % (if nomalize Amp == 0) ylim of graph
 LineW = 1.5; %0.1;a % width of plot line 
-synergy_order = [3,1,4,2];  % (pre1,2,3,4)に対応するpostのsynergy(Yachimun:[4,2,1,3], Seseki:[3,1,4,2])
 timing_name_list = ["Lever1 on ", "Lever1 off ", "Lever2 on ", "Lever2 off"]; % this is used for titling
 row_num = 4; % how many rows to display in one subplot figure
 fig_type_array = {'stack', 'std'}; % you don't  need to change
@@ -93,12 +83,18 @@ end
 [~, session_num] = size(Allfiles_S);
 
 
-% 未確認
-Allfiles = strrep(Allfiles_S,'_Pdata.mat',''); % ok!!(フォルダ名に使うだけ)
-AllDays = strrep(strrep(Allfiles, monkeyname, ''), '_', ''); % sgtitleに使うだけ(単純な日付が欲しい)
+% make array containing folder name
+Allfiles = strrep(Allfiles_S,'_Pdata.mat',''); % just used for folder name
+switch plot_type
+    case 'EMG'
+        days_str = strrep(strrep(Allfiles, monkeyname, ''), '_', ''); % just used for 'sgtitle'
+    case 'Synergy'
+        extract_func = @(str) regexp(str, '.*_(\d+)$', 'tokens', 'once');
+        days_str = cellfun(extract_func, Allfiles, 'UniformOutput', true);
+end
+
 if pColor == 'C'
-    AllDaysN = strrep(AllDays,'Syn4','');
-    AllDaysN =str2double(AllDaysN');
+    days_double =str2double(days_str'); % used for matching with 'Csp'
 end
 
 
@@ -185,49 +181,22 @@ for ii = 1:(timing_num-1)
     [Ptrig{ii}] = makeSDdata(Ptrig{ii}, session_num, element_num);
 end
 
-%% (未確認, postのデータをプロットする際に、preに順序を合わせるために、synergy_orderに従って入れ替える)
-% if strcmp(plot_type, 'Synergy') && strcmp(pColor, 'C')
-%     Pdata_list = {'Pall', 'Ptrig2', 'Ptrig3'};
-%     days_num = length(AllDays);
-%     for ii = 1:length(Pdata_list)
-%         for d = 1:days_num
-%             temp = eval([Pdata_list{ii} '.plotData_sel{d}(synergy_order, :);']);
-%             eval([Pdata_list{ii} '.plotData_sel{d} = temp;'])
-%         end
-%     end
-% end
-% 
-% % Rearrange post and concatenate it with pre
-% if strcmp(plot_type, 'Synergy') && strcmp(pColor, 'K') && not(length(AllDays) == length(PreDays))
-%     Pdata_list = {'Pall', 'Ptrig2', 'Ptrig3'};
-%     for ii = 1:length(Pdata_list)
-%         for d = length(PreDays)+1:length(AllDays)
-%             temp = eval([Pdata_list{ii} '.plotData_sel{d}(synergy_order, :);']);
-%             eval([Pdata_list{ii} '.plotData_sel{d} = temp;'])
-%         end
-%     end
-% end
+% make array of colormap for plot
+if strcmp(pColor, 'C')
+    % get PostDays(get dates from the file name of 'Pdtata' & exclude dates of PreDays from it)
+    PostDays =  transpose(extract_post_days(PreDays, select_folder_path, plot_type));
 
-%% specify colormap for plot(P.PostDaysを未確認), ここじゃなくてよくねーか?
-% if strcmp(pColor, 'C')
-%     switch plot_type
-%         case 'EMG'
-%             [P.PostDays] = extract_post_days(PreDays);
-%         case 'Synergy'
-%             P.PostDays = AllDaysN;
-%     end
-% 
-%     switch realname
-%         case 'SesekiL'
-%             color_id = 2;
-%         otherwise
-%             color_id = 1;
-%     end
-%     PostDays = P.PostDays;
-%     Sp = length(PostDays);
-%     Csp = zeros(Sp, 3);
-%     Csp(:, color_id) = ones(Sp, 1).*linspace(0.3, 1, Sp)';
-% end
+    % decision of base color(RGB)
+    switch realname
+        case 'SesekiL'
+            color_id = 2;
+        otherwise
+            color_id = 1;
+    end
+    PostLength = length(PostDays);
+    Csp = zeros(PostLength, 3);
+    Csp(:, color_id) = ones(PostLength, 1).*linspace(0.3, 1, PostLength)';
+end
 
 %% define save folder path (which is stored all data & figures)
 save_fold_path = fullfile(pwd, realname, 'easyData', 'P-DATA', [ Allfiles{1} 'to' Allfiles{end} '_' sprintf('%d',session_num)]);
@@ -248,7 +217,7 @@ Pall.x = linspace(taskRange(1), taskRange(2), Pall.AllT_AVE);
 
 % add variables which is used in plot function in 'data_struct'
 data_str = struct();
-use_variable_name_list = {'element_num', 'session_num', 'pColor', 'LineW', 'normalizeAmp', 'YL', 'EMGs', 'plot_type', 'Csp', 'PostDays', 'AllDaysN', 'row_num', 'timing_num'};
+use_variable_name_list = {'element_num', 'session_num', 'pColor', 'LineW', 'normalizeAmp', 'YL', 'EMGs', 'plot_type', 'PostDays', 'days_double', 'Csp', 'row_num', 'timing_num'};
 
 % store data in a struct
 not_exist_variables = {};
@@ -262,7 +231,9 @@ for jj = 1:length(use_variable_name_list)
 end
 
 % display not found variable in 'use_variable_name_list'
-disp(['(' char(join(not_exist_variables, ', ')) ') is not found'])
+if not(isempty(not_exist_variables))
+    disp(['(' char(join(not_exist_variables, ', ')) ') is not found'])
+end
 
 %% 1. plot all taks range data(all muscle) -> plot range follows 'plotWindow'
 
@@ -286,7 +257,7 @@ if plot_all == 1
     
         % plot figure
         f = plot_figures(f, data_str, 'whole_task', fig_type);
-        sgtitle([fig_type ' ' plot_type ' in task(from' num2str(AllDays{1}) 'to' num2str(AllDays{end}) '-' num2str(length(AllDays)) ')'], 'FontSize', 25)
+        sgtitle([fig_type ' ' plot_type ' in task(from' num2str(days_str{1}) 'to' num2str(days_str{end}) '-' num2str(length(days_str)) ')'], 'FontSize', 25)
     
         % save figure
         saveas(gcf, fullfile(save_fold_path, [save_figure_name '_' fig_type '.fig']))
@@ -366,15 +337,21 @@ end
 
 %% define local function
 
-% make PostDays
-function [PostDays] = extract_post_days(PreDays)
-    files_struct = dir('*_Pdata.mat');
+% make dates array of post as 'PostDays'
+function [PostDays] = extract_post_days(PreDays, folder_path, plot_type)
+    files_struct = dir(fullfile(folder_path, '*_Pdata.mat'));
     file_names = {files_struct.name};
     count = 1;
     for i = 1:numel(file_names)
-        match = regexp(file_names{i}, '\d+', 'match'); %extract number part
-        if ~ismember(str2double(match{1}), PreDays)
-            PostDays(count) = str2double(match{1});
+        num_parts = regexp(file_names{i}, '\d+', 'match'); %extract number part
+        switch plot_type
+            case  'EMG'
+                ref_day = num_parts{1};
+            case 'Synergy'
+                ref_day = num_parts{2};
+        end
+        if ~ismember(str2double(ref_day), PreDays)
+            PostDays(count) = str2double(ref_day);
             count = count + 1;
         end
     end

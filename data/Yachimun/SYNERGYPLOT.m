@@ -27,7 +27,6 @@ clear;
 %% set param
 monkeyname = 'F'; % initials that each monkey has uniquery
 synergy_num_list = [4]; % which synergy number of synergies to plot
-type = '_filtNO5';% _filt5 means'both' direction filtering used 'filtfilt' function (don't need to change)
 nmf_fold_name = 'new_nmf_result';
 each_plot = 0; % whether you want to plot spatial_pattern figure for each synergy
 

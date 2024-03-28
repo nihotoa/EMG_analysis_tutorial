@@ -9,19 +9,28 @@ function [] = plot_stack_figures(data_str, m)
 
     % plot average activity for each session
     for d = 1:session_num
+        
+        % formatting of data to be plotted
+        plot_data = Pdata.plotData_sel{d,1}(m,:);
+        if iscell(plot_data)
+            plot_data = cell2mat(plot_data);
+        end
+
         switch pColor
             case 'C'
-                try
-                    plot(Pdata.x,cell2mat(Pdata.plotData_sel{d,1}(m,:)),'Color', Csp(d,:), 'LineWidth',LineW);
-                catch
-                    plot(Pdata.x,Pdata.plotData_sel{d,1}(m,:),'Color',Csp(d,:), 'LineWidth',LineW);
+                % datect days_id
+                ref_day = days_double(d);
+                day_id = find(ref_day == PostDays);
+                if isempty(day_id) 
+                    close all;
+                    error([num2str(ref_day) ' is not included in "PostDays" and cannot be used. Please change "pColor" and run again!'])
                 end
+                
+                % plot
+                plot(Pdata.x, plot_data, 'Color', Csp(day_id,:), 'LineWidth', LineW);
             case 'K'
-                try
-                    plot(Pdata.x,cell2mat(Pdata.plotData_sel{d,1}(m,:)),'k','LineWidth',LineW);
-                catch
-                    plot(Pdata.x,Pdata.plotData_sel{d,1}(m,:),'k','LineWidth',LineW);
-                end
+                % plot
+                plot(Pdata.x, plot_data, 'k', 'LineWidth', LineW);
         end
     end
 end

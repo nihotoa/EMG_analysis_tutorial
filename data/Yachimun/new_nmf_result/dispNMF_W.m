@@ -27,30 +27,20 @@ pre: SYNERGYPLOT.m
 post: MakeDataForPlot_H_utb(EMG_analysis/data/Yachimun/new_nmf_result/MakeDataForPlot_H_utb)
 
 [Improvement points(Japanaese)]
-・シナジーのソートの部分を関数に直す
-・preとpostのシナジーの対応づけを自動で行うように変更する
 %}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 clear;
 
 %% set param
+monkeyname = 'F';  % Name prefix of the folder containing the synergy data for each date
+synergy_type = 'pre';  % Whether to analyse pre or post synergies. ('pre' / 'post')
 syn_num = 4; % number of synergy you want to analyze
 save_WDaySynergy = 1;% Whether to save synergy W (to be used for ANOVA)
 save_data = 1; % Whether to store data on synergy orders in 'order_tim_list' folder (should basically be set to 1).
 save_fig = 1; % Whether to save the plotted synergy W figure
-synergy_order = [4, 2, 1, 3]; % Array for mapping synergies between 'pre' and 'post'
 synergy_combination = 'dist-dist'; % dist-dist/prox-dist/all etc..
 
 %% code section
-
-% get the list of day
-disp('Please select all date folder you want to analyze')
-InputDirs   = uiselect(dirdir(pwd), 1, 'Please select all date folder you want to analyze');
-days = get_days(InputDirs);
-
-% get prefix of selected folder name (to be used for newly created file & folder name)
-split_str = regexp(InputDirs{1}, '\d+', 'split');
-monkeyname = split_str{1};
 
 % do not change(Pre dates in Yachimun's experiments)
 pre_days = [...
@@ -60,6 +50,26 @@ pre_days = [...
                  170526; ...
                  ];
 
+% Create a list of folders containing the synergy data for each date.
+data_folders = dir(pwd);
+folderList = {data_folders([data_folders.isdir]).name};
+Allfiles_S = folderList(startsWith(folderList, monkeyname));
+
+% (you don't need to change)Further refinement by synergy_type
+switch synergy_type
+    case 'pre'
+        Allfiles_S = Allfiles_S(1:4);
+    case 'post'
+        Allfiles_S = Allfiles_S(5:end);
+end
+
+S = size(Allfiles_S);
+Allfiles = strrep(Allfiles_S, '_standard','');
+days = strrep(Allfiles, monkeyname, '');
+days = cellfun(@str2double, days);
+days = transpose(days);
+day_num = length(days);
+
 % determine 'term_group'
 if any(ismember(days, pre_days))
     term_group = 'pre';
@@ -68,7 +78,7 @@ else
 end
 
 %% Get the name of the EMG used for the synergy analysis
-first_date_fold_name = InputDirs{1};
+first_date_fold_name = Allfiles_S{1};
 
 % Get the path of the file that has name information of EMG used for muscle synergy analysis
 first_date_file_path = fullfile(pwd, first_date_fold_name, [first_date_fold_name '.mat']);
@@ -78,43 +88,29 @@ load(first_date_file_path, 'TargetName');
 EMGs = get_EMG_name(TargetName);
 EMG_num = length(EMGs);
 
-%% load spatial syenergy data & sort synergies
-
-% Create an empty array to store synergy W values
-Wx =  cell(1,length(days));
-
-% Read the daily synergy W values & create an array.
-for i = 1:length(days)
-    % Load the W synergy data created in the previous phase
-    synergy_W_file_path = fullfile(pwd, [monkeyname mat2str(days(i)) '_standard'], [monkeyname mat2str(days(i)) '_syn_result_' sprintf('%d',EMG_num)], [monkeyname mat2str(days(i)) '_W'], [monkeyname mat2str(days(i)) '_aveW_' sprintf('%d',syn_num)]);
-    load(synergy_W_file_path, 'aveW');
-    Wx{i} = aveW;
-end
 
 %% Reorder the synergies to match the synergies on the first day.
-Wcom = zeros(EMG_num,syn_num);
-Wt = Wx;
-Wxs = Wx;
-aveWt = Wt{1};
-m = zeros(length(days),syn_num);
-k_arr = ones(syn_num, length(days));
-for i =  1:syn_num
-    k_arr(i,1) = i; %初日
-    for j = 2:length(days)
-        for l = 1:syn_num
-            Wcom(:,l) = (Wx{1,1}(:,i) - Wx{1,j}(:,l)).^ 2; % Square the difference between synergy I on day 1 and synergy l on day j
-            m(j,l) = sum(Wcom(:,l)); % Add the values together (the smallest one should be the corresponding synergy).
-        end
-        Wt{1,j}(:,i) = Wx{1,j}(:,find(m(j,:)==min(m(j,:))));
-        Wx{1,j}(:,find(m(j,:)==min(m(j,:)))) = ones(EMG_num,1).*1000;
-        k_arr(i,j) = find(m(j,:)==min(m(j,:)));
-    end
+
+% align the order of synergies
+[Wt, k_arr] = OrderSynergy(EMG_num, syn_num, monkeyname, days);
+
+if strcmp(term_group, 'post')
+    % align the order of synergies with the 1st day of 'pre'
+    compair_days = [pre_days(1); days(1)];
+    [~, order_list] = OrderSynergy(EMG_num, syn_num, monkeyname, compair_days);
+    synergy_order = order_list(:, 2);
+
+    % align with using 'synergy_order'
+    k_arr = k_arr(synergy_order, :);
+    Wt = cellfun(@(x) x(:, synergy_order), Wt, 'UniformOutput', false);
 end
+
+% Expand Wt & rearrange columns
 Walt = cell2mat(Wt);
 Wall = Walt;
-for i = 1:syn_num
-    for j=1:length(days)
-        Wall(:,(i-1)*length(days)+j) = Walt(:,(j-1)*syn_num+i);
+for s_id = 1:syn_num
+    for d_id=1:day_num
+        Wall(:,(s_id-1)*day_num+d_id) = Walt(:,(d_id-1)*syn_num+s_id);
     end
 end
 
@@ -126,22 +122,17 @@ muscle_name = x;
 zeroBar = zeros(EMG_num,1);
 
 % make folder to save figures
-save_figure_folder_path = fullfile(pwd, 'syn_figures', [monkeyname mat2str(days(1)) 'to' mat2str(days(end)) '_' sprintf('%d',length(days))]);
+save_figure_folder_path = fullfile(pwd, 'syn_figures', [monkeyname mat2str(days(1)) 'to' mat2str(days(end)) '_' sprintf('%d',day_num)]);
 makefold(save_figure_folder_path);
 
-for i=1:syn_num 
-    f1 = figure('Position',[300,250*i,750,400]);
+for s_id=1:syn_num 
+    f1 = figure('Position',[300,250*s_id,750,400]);
     hold on;
     
     % create plotted_W
-    plotted_W = nan(EMG_num, length(days));
-    for jj = 1:length(days)
-        switch term_group
-            case 'pre'
-                plotted_W(:, jj) = Wt{jj}(:, i);
-            case 'post'
-                plotted_W(:, jj) = Wt{jj}(:, synergy_order(i));
-        end
+    plotted_W = nan(EMG_num, day_num);
+    for d_id = 1:day_num
+        plotted_W(:, d_id) = Wt{d_id}(:, s_id);
     end
     bar(x,[zeroBar plotted_W],'b','EdgeColor','none');
 
@@ -152,7 +143,7 @@ for i=1:syn_num
     a.FontWeight = 'bold';
     a.FontName = 'Arial';
     if save_fig == 1
-        figure1_name = ['W' sprintf('%d',syn_num) '_' mat2str(days(1)) 'to' mat2str(days(end)) '_' sprintf('%d',length(days)) '_syn' sprintf('%d',i)];
+        figure1_name = ['W' sprintf('%d',syn_num) '_' mat2str(days(1)) 'to' mat2str(days(end)) '_' sprintf('%d',day_num) '_syn' sprintf('%d',s_id)];
         saveas(f1, fullfile(save_figure_folder_path, [figure1_name '.fig']));
         saveas(f1, fullfile(save_figure_folder_path, [figure1_name '.png']));
     end
@@ -165,47 +156,38 @@ if save_WDaySynergy == 1
 
     % Changing the structure of an array
     WDaySynergy = cell(1,syn_num);
-    for ii = 1:syn_num
-        for jj = 1:length(days)
-            WDaySynergy{ii}(:, jj) = Wt{jj}(:, ii);
+    for s_id = 1:syn_num
+        for d_id = 1:day_num
+            WDaySynergy{s_id}(:, d_id) = Wt{d_id}(:, s_id);
         end
     end
-
-    % match the order of synergies in 'pre'
-    if strcmp(term_group, 'post')
-        temp = cell(1,4);
-        for ii = 1:syn_num
-            temp{ii} = WDaySynergy{synergy_order(ii)};
-        end
-        WDaySynergy = temp;
-    end
-
+    
     % save_data
-    data_file_name = [monkeyname num2str(days(1)) 'to' num2str(days(end)) '_' num2str(length(days)) '(' term_group ')'];
+    data_file_name = [monkeyname num2str(days(1)) 'to' num2str(days(end)) '_' num2str(day_num) '(' term_group ')'];
     save(fullfile(pwd, 'W_synergy_data', data_file_name), 'WDaySynergy', 'x');
 end
 
 %% Plot the average value of synergy_W for all selected dates
-
+aveWt = Wt{1};
 % calcrate the average of synergy W
-for j=1:length(days)
-    aveWt = (aveWt.*(j-1) + Wt{j})./j;
+for d_id=1:day_num
+    aveWt = (aveWt.*(d_id-1) + Wt{d_id})./d_id;
 end
 
 % plot figure of averarge synergyW
 errt = zeros(EMG_num,syn_num);
-for i=1:syn_num
-    f2 = figure('Position',[900,250*i,750,400]);
+for s_id=1:syn_num
+    f2 = figure('Position',[900,250*s_id,750,400]);
 
     % Calculate standard deviation
-    errt(:,i) = std(Wall(:,(i-1)*length(days)+1:i*length(days)),1,2)./sqrt(length(days));
+    errt(:,s_id) = std(Wall(:,(s_id-1)*day_num+1:s_id*day_num),1,2)./sqrt(day_num);
 
     % plot
-    bar(x,aveWt(:,i));
+    bar(x,aveWt(:,s_id));
     hold on;
 
     % decoration
-    e1 =errorbar(x, aveWt(:,i), errt(:,i), 'MarkerSize',1);
+    e1 =errorbar(x, aveWt(:,s_id), errt(:,s_id), 'MarkerSize',1);
     ylim([-1 4])
     e1.Color = 'r';
     e1.LineWidth = 2;
@@ -218,27 +200,69 @@ for i=1:syn_num
     
     % save figure
     if save_fig == 1
-        figure_average_name = ['aveW' sprintf('%d',syn_num) '_' mat2str(days(1)) 'to' mat2str(days(end)) '_' sprintf('%d',length(days)) '_syn' sprintf('%d',i)];
+        figure_average_name = ['aveW' sprintf('%d',syn_num) '_' mat2str(days(1)) 'to' mat2str(days(end)) '_' sprintf('%d',day_num) '_syn' sprintf('%d',s_id)];
         saveas(f2, fullfile(save_figure_folder_path, [figure_average_name '.fig']));
         saveas(f2, fullfile(save_figure_folder_path, [figure_average_name '.png']));
     end
 end
 close all;
 %% save order for next phase analysis
-
 if save_data == 1
     % save data of synergyW
     save_W_data_dir = fullfile(pwd, 'spatial_synergy_data', synergy_combination);
     makefold(save_W_data_dir);
-    save_W_data_file_name = [term_group '(' num2str(length(days)) 'days)_data.mat'];
+    save_W_data_file_name = [term_group '(' num2str(day_num) 'days)_data.mat'];
     save(fullfile(save_W_data_dir, save_W_data_file_name),"Wt","muscle_name","days")
 
     % save data which is related to the order of synergy
-    save_order_data_dir = fullfile(pwd, 'order_tim_list',  [monkeyname mat2str(days(1)) 'to' mat2str(days(end)) '_' sprintf('%d',length(days))]);
+    save_order_data_dir = fullfile(pwd, 'order_tim_list',  [monkeyname mat2str(days(1)) 'to' mat2str(days(end)) '_' sprintf('%d',day_num)]);
     makefold(save_order_data_dir);
 
     comment = 'this data were made for aveH plot';
-    save_order_data_file_name = [monkeyname mat2str(days(1)) 'to' mat2str(days(end)) '_' sprintf('%d',length(days)) '_' sprintf('%d',syn_num) '.mat'];
+    save_order_data_file_name = [monkeyname mat2str(days(1)) 'to' mat2str(days(end)) '_' sprintf('%d',day_num) '_' sprintf('%d',syn_num) '.mat'];
     save(fullfile(save_order_data_dir, save_order_data_file_name), 'k_arr','comment', 'days', 'EMG_num', 'syn_num');
 end
 
+
+%% define local function
+function [Wt, k_arr] = OrderSynergy(EMG_num, syn_num, monkeyname, days)
+day_num = length(days);
+
+% Create an empty array to store synergy W values
+W_data =  cell(1,day_num);
+
+% Read the daily synergy W values & create an array.
+for d_id = 1:day_num
+    % Load the W synergy data created in the previous phase
+    synergy_W_file_path = fullfile(pwd, [monkeyname mat2str(days(d_id)) '_standard'], [monkeyname mat2str(days(d_id)) '_syn_result_' sprintf('%d',EMG_num)], [monkeyname mat2str(days(d_id)) '_W'], [monkeyname mat2str(days(d_id)) '_aveW_' sprintf('%d',syn_num)]);
+    load(synergy_W_file_path, 'aveW');
+    W_data{d_id} = aveW;
+end
+
+% prepare empty array to store data
+Wcom = zeros(EMG_num, syn_num);
+m = zeros(day_num,syn_num);
+Wt = W_data;
+k_arr = ones(syn_num, day_num);
+
+% sort data
+for s_id = 1:syn_num
+    k_arr(s_id, 1) = s_id; % first day
+    for d_id = 2:day_num
+        % calcurate the error with s_id synergy
+        for l = 1:syn_num
+            Wcom(:,l) = (W_data{1,1}(:, s_id) - W_data{1, d_id}(:, l)).^ 2; % Square the difference between synergy I on day 1 and synergy l on day d_id
+            m(d_id,l) = sum(Wcom(:, l)); % Add the values together (the smallest one should be the corresponding synergy).
+        end
+
+        [~, ref_s_id] = min(m(d_id,:));
+
+        % perform sorting with reference to the error
+        Wt{1,d_id}(:,s_id) = W_data{1,d_id}(:, ref_s_id);
+        k_arr(s_id,d_id) = ref_s_id;
+
+        % assign large value to the used synergy index
+        W_data{1, d_id}(:,ref_s_id) = ones(EMG_num,1).*1000;
+    end
+end
+end
