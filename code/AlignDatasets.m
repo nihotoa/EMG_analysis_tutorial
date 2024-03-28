@@ -1,47 +1,41 @@
-function [alignedDATA, slct]=AlignDatasets(DATA,tarLength,direction)
+%{
+セッション(日付)ごとに1トライアルの平均の長さが違うので、resampleして(時間正規化して)セッション間の長さを統一するための関数
+使われている関数:
+plotEasyData_utb.m(runningEasyfuncの中で使われている)
+MakeDataForPlot_H_utb
+plotTarget.m
+%}
+function [alignedDATA]=AlignDatasets(DATA, tarLength)
 %{
 explanation: change the construction of data & resample data(adjast to 'tarLength')
-about paremeter 'slct': this is not used. (I don't know why this parameter is defined)
 %}
 if iscell(DATA)
-   CELLsize = size(DATA);
-   alignedDATA = cell(length(DATA),1);
-   slct = cell(length(DATA),1);
-   if min(CELLsize)==1
-      targetNum = length(DATA);
-      for tar = 1:targetNum
-         [alignedDATA{tar}, slct{tar}] = AlignMatrixData(DATA{tar},tarLength,direction);
-      end
-   end
+    element_num = max(size(DATA));
+    alignedDATA = cell(element_num,1);
+    for ii = 1:element_num
+        [alignedDATA{ii}] = AlignMatrixData(DATA{ii}, tarLength);
+    end
 else
-   [alignedDATA, slct] = AlignMatrixData(DATA,tarLength,direction);
+   [alignedDATA] = AlignMatrixData(DATA, tarLength);
 end
 
 end
+
 %% define local function
-function [alignedDATA, slct]=AlignMatrixData(DATA,tarLength,direction)
-slct.val = [0 0 0];
-slct.note = 'val = [''equal'', ''data < tar'', ''data > tar'']';
+function [alignedDATA]=AlignMatrixData(DATA,tarLength)
 % Transpose DATA matrix only 'row' direction data
-switch direction
-   case 'row'
-      DATA = DATA';
-   case 'column'
-end
-if length(DATA(:,1)) == tarLength
-   slct.val(1) = slct.val(1)+1;
+DATA = DATA';
+DATA_length = length(DATA);
+
+% Time normalisation by comparing the length of the data in that session with the average of the length of the data in all sessions.
+if length(DATA_length) == tarLength
    alignedDATA = DATA;
-elseif length(DATA(:,1))<tarLength 
-   slct.val(2) = slct.val(2)+1;
+elseif length(DATA_length)<tarLength 
    alignedDATA = interpft(DATA,tarLength,1);
 else
-   slct.val(3) = slct.val(3)+1;
-   alignedDATA = resample(DATA,tarLength,length(DATA(:,1)));
+   alignedDATA = resample(DATA,tarLength,length(DATA_length));
 end
+
 % RE-Transpose alignedDATA matrix only 'row' direction data
-switch direction
-   case 'row'
-      alignedDATA = alignedDATA';
-   case 'column'
-end
+alignedDATA = alignedDATA';
 end

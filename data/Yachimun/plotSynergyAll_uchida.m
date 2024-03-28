@@ -93,18 +93,15 @@ for i = 1:pcNum
     title([fold_name ' W pcNum = ' sprintf('%d',pcNum)]);
 end
 
+%% save figure & data about W (temporal pattern of synergy)
 % set the path to save data & figure
 save_fold = fullfile(fold_path, [fold_name '_syn_result_' sprintf('%02d',EMG_num)]);
-if not(exist(save_fold))
-    mkdir(fullfile(fold_path, save_fold))
-end
+makefold(save_fold);
 
 % save_data
 if save_data == 1
     save_fold_W = fullfile(save_fold, [fold_name '_W']);
-    if not(exist(save_fold_W))
-        mkdir(save_fold_W)
-    end
+    makefold(save_fold_W);
     comment = 'this data will be used for dispW';
     save(fullfile(save_fold_W, [fold_name '_aveW_' sprintf('%d',pcNum) '.mat']), 'aveW','k','pcNum','fold_name','comment');
 end
@@ -168,7 +165,14 @@ end
 %% plot H (temporal pattern of synergy)
 % load timing data (which is created by )
 easyData_path = fullfile(pwd, 'easyData', [fold_name '_' task]);
-load(fullfile(easyData_path, [fold_name '_EasyData.mat']), 'Tp', 'SampleRate');
+easyData_file_name = [fold_name '_EasyData.mat'];
+easyData_file_path = fullfile(easyData_path, easyData_file_name);
+try
+    load(easyData_file_path, 'Tp', 'SampleRate');
+catch
+    stack = dbstack;
+    error(['(Error occured: line ' num2str(stack(1).line + 1) ') EasyData(' easyData_file_path ') is not found. Please run "runnningEasyfunc.m" first!']);
+end
 
 % 
 SUC_Timing_A = floor(Tp.*(100/SampleRate));
@@ -214,9 +218,7 @@ end
 %% save figure & data about H (temporal pattern of synergy)
 if save_data == 1
     save_fold_H = fullfile(save_fold, [fold_name '_H']);
-    if not(exist(save_fold_H))
-        mkdir([fold_name '_H'])
-    end
+    makefold(save_fold_H);
     comment = 'this data will be used for dispH';
     save(fullfile(save_fold_H, [fold_name '_aveH3_' sprintf('%d',pcNum) '.mat']), 'aveH','k','pcNum','fold_name','comment');
 end
@@ -267,9 +269,7 @@ title([fold_name ' R^2']);
 % save VAF figure
 if save_fig_r2 ==1
     save_fold_VAF = fullfile(save_fold, [fold_name '_r2']);
-    if not(exist(save_fold_VAF))
-        mkdir([fold_name '_r2'])
-    end
+    makefold(save_fold_VAF)
     saveas(gcf, fullfile(save_fold_VAF, [fold_name ' R2 pcNum = ' sprintf('%d',pcNum) '.png']));
     close all;
 end

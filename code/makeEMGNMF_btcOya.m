@@ -9,16 +9,11 @@ Perform muscle synergy analysis and save the results (as .mat file)
 
 [Saved data location]
 location:
-/Volumes/SSPH/EMG_analysis/data/Yachimun/new_nmf_result/selected_folder_name (ex.) F170516_standard
+EMG_analysis/data/Yachimun/new_nmf_result/selected_folder_name (ex.) F170516_standard
 file name: selected_folder_name + .mat (ex.)F170516_standard.mat => this file contains analysis conditions, VAF, and other data
                 t_ + selected_folder_name + .mat (ex.)t_F170516_standard.mat => this file contains synergy data
 
 [procedure]
-ÅEfor Nibali('Nibali' is monkey name)
-pre : untitled.m
-post : makefold.m
-
-ÅEanother monkey
 pre:fitlerBat_SynNMFPre.m
 post: SYNERGYPLOT.m
 

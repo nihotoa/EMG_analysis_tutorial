@@ -1,44 +1,53 @@
 ## Overview
-This repository contains the code required for EMG analysis and muscle synergy analysis
+This repository provides codes & some files for tutorials on EMG analysis and muscle synergy analysis
 
 ## How to analyze
 
-- **preliminary preparations** <br>
+  - **preliminary preparations** <br>
 
-    1. Please place all recorded data file directly under the monkey name folder.<br>
-    (ex.) data -> Yachimun -> here!!<br>
-    Please refer to the attached csv file for the dates to be analysed(exists at the top level of this repository)<br>
+    * Please place all recorded data file directly under the monkey name folder.<br>
+    (ex.) EMG_analysis_turorial/data/Yachimun/<br>
 
-        **location of data:**
-        - **As for Yachimun**<br>
-        nasmodel-data/files/data/TendonTransfer/Yachimun/EMG/here!!
+      * How to obtain recorded data:<br>
+        To obtain the dataset, please contact the email address given at the end of this README.
 
-        - **As for SesekiL**<br>
-        Comming soon...
-    2. Please add 'code' and 'data' folder to PATH in MATLAB
+    * Understand the directory structure of this repository<br>
+      The documentation in the code assumes that you understand this folder structure.<br>
+      The folder structre is shown in the following figure.<br>
+      <ここにフォルダ構造のツリーを書いていく>
 
-
-- **EMG_analysis**
-
-  1. **Run 'SaveFileinfo.m'**
-    - **location**: data -> monkeyname -> here!!
-    - **function**: save data for merging measurement data.
-
-  2. **Run 'runnningEasyfunc.m'**
-    - **location**: data -> here!!
-    - **function**: 3 function
-      1. merge data & generate timing_data
-      2. evaluate cross-talk
-      3. filtering & Time Normalization of Tasks
-
-  3. **Run 'plotTarget.m'**
-    - **location**: data -> here!!
-    - **function**: Plot EMG data
+    * Please add 'code' and 'data' folder to PATH in MATLAB
 
 
-- **Synergy_analysis**
-  1. **Run 'SaveFileinfo.m'**
+  - **EMG_analysis** <br>
+    If you want to perform EMG analysis, please execute the functions in the following procedure
+    1. **Run 'SaveFileinfo.m'**
 
+      - **file location**: EMG_analysis_turorial/data/monkeyname/
+
+      - **function**: Save data for merging measurement data.
+
+    2. **Run 'runnningEasyfunc.m'**
+      - **file location**: EMG_analysis_turorial/data/
+
+      - **function**: 3 function
+
+        1. merge data & generate timing_data
+
+        2. evaluate cross-talk
+
+        3. filtering & Time Normalization of Tasks
+
+    3. **Run 'plotTarget.m'**
+
+      - **file location**: EMG_analysis_turorial/data/
+
+      - **function**: Plot EMG data
+
+  - **Synergy_analysis**
+
+    1. **Run 'SaveFileinfo.m'** <br>
+      この後にシナジー解析の順番を書いていく
 
 ## Remarks
   The following information is written at the beginning of every code. Please refer to them and proceed with the analysis.
@@ -48,11 +57,12 @@ This repository contains the code required for EMG analysis and muscle synergy a
   - **Role of this code**<br>
     The role of code is briefly described in this section
 
-  - **Caution!!**<br>
-    This section contains notes for running the code & also contains troubleshooting tips
-
   - **Saved data location**<br>
     This section contains details of the data and where it is saved
 
   - **Procedure**<br>
     This section describes which code should be executed before and after the target code.
+
+## Contact
+
+  if you need the dataset for analysis or have any questions, please feel free to contact us at nao-ota@ncnp.go.jp

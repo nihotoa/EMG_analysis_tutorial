@@ -321,11 +321,11 @@ for m = 1:EMG_num
     end
 
     Re.slct = cell(5,1);
-    [tD1, Re.slct{1}]=AlignDatasets(tD1,round(TIME_W*sum(per1)),'row');
-    [tD2, Re.slct{2}]=AlignDatasets(tD2,round(TIME_W*sum(per2)),'row');
-    [tD3, Re.slct{3}]=AlignDatasets(tD3,round(TIME_W*sum(per3)),'row');
-    [tD4, Re.slct{4}]=AlignDatasets(tD4,round(TIME_W*sum(per4)),'row');
-    [tDTask, Re.slct{5}]=AlignDatasets(tDTask,round(TIME_W*sum(pertask)),'row');
+    [tD1]=AlignDatasets(tD1,round(TIME_W*sum(per1)));
+    [tD2]=AlignDatasets(tD2,round(TIME_W*sum(per2)));
+    [tD3]=AlignDatasets(tD3,round(TIME_W*sum(per3)));
+    [tD4]=AlignDatasets(tD4,round(TIME_W*sum(per4)));
+    [tDTask]=AlignDatasets(tDTask,round(TIME_W*sum(pertask)));
     Re.tData1{m} = cell2mat(tD1);
     Re.tData1_AVE{m} = mean(Re.tData1{m});
     Re.tData2{m} = cell2mat(tD2);
