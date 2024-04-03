@@ -1,16 +1,25 @@
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %{
-coded by Naoki Uchida
-last modification : 2024. 03.12(by Ota)
-[function]
-Check cross-talk between EMGs
-(For each trial, find the maximum value between arbitrary EMGs and take their average value.)
+[explanation of this func]:
+this function is used in 'runnningEasyfunc.m'
+Check for cross-talk between measured EMGs
 
-[points of improvement(Japanese)]
-遲矩崕縺ｫ縺励※繧?3髫主ｾｮ蛻?蛟､縺ｫ縺励※繧ら嶌莠堤嶌髢｢髢｢謨ｰ縺ｮ邨ｶ蟇ｾ蛟､縺ｮ譛?螟ｧ蛟､繧偵→縺｣縺ｦ縺?繧九′縺?縺?縺ｮ縺具ｼ?
-(縺昴?ｮ譎ゅ?ｮ菴咲嶌縺ｯ菫晏ｭ倥＆繧後※縺?縺ｪ縺? & 邨ｶ蟇ｾ蛟､縺?縺｣縺溘ｉ-1縺ｮ蜿ｯ閭ｽ諤ｧ繧ゅ≠繧?)
+[input arguments]:
+monkeyname: [char], prefix of data
+xpdate_num: [double], date of experiment
+save_fold: [char], 'easyData', you dont need to change
+save_CTR: [0/1], Whether the data is saved or not.
+task: [char], 'standard', you dont need to change
+real_name: [char], full name of monkey
+
+[output arguments]:
+Yave: [double array], Array containing the values of the cross-correlation coefficients between EMG.
+Y3ave: [double array], Array containing the values of the cross-correlation coefficients between EMG.
+
+[points of improvement(Japanese)]   
+筋電にしても、3階微分値にしても相互相関関数の絶対値の最大値をとっているがそれでいいのか?
+(その時間の位相は保存されてない? & 絶対値だったら-1の可能性もあるのでは?)
 %}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 function [Yave,Y3ave] = CTcheck(monkeyname, xpdate_num, save_fold, save_CTR, task, real_name)
 xpdate = sprintf('%d',xpdate_num);
 disp(['START TO MAKE & SAVE ' monkeyname xpdate 'CTcheck Data']);

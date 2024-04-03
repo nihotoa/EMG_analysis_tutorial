@@ -1,5 +1,18 @@
+
 %{
-This function is used in SYNERGYPLOT.m
+explanation of this func:
+This function is used in 'SYNERGYPLOT.m'.
+Plot the results of the synergy analysis (temporal pattern, spatial pattern, VAF, etc.), focusing on the number of synergies in 'pcNum' for the date specified in 'fold_name'.
+
+input arguments:
+fold_name: [char], prefix & date (ex.) 'F170516'
+pcNum: [double], number of synergies to focus on
+nmf_fold_name: [char], 
+each_plot: [0 or 1], Parameter for changing the layout of diagram.
+save_setting:[struct], structure containing parameters for whether the output diagram should be saved or not.
+
+output arguments:
+
 %}
 
 function plotSynergyAll_uchida(fold_name, pcNum,nmf_fold_name, each_plot, save_setting)

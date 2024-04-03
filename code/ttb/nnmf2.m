@@ -1,15 +1,17 @@
 function[wbest,hbest,normbest] = nnmf2(a,k,w0,h0,nrep,alg,target_param,pre_normalize,post_normalize)
 %{ 
-explanation of input arguments:
+[explanation of this func]
+Perform NNMF according to multiplicative update rule.
+Also calculate values for SSE, SST, etc.
+
+[input arguments]:
 a:  matrix of EMG data ([mm,nn]=size(a) mm channels x nn data length)
 k:  number of synergies (factors in NNMF) to extract
 w0,h0: Initial values of W_matrix (spatial pattern. [mm, k] = size(W)) & H_matrix (temporal pattern. [k, nn] = size(H)) 
 target_param: which matrix should be updated? ('wh' or 'h'). basically 'wh' is fine
 post_normalize: whether to perform amplitude normalization of H_matrix after optimization of H. 'mean'or 'none'. (Default is 'none')
-%}
 
-%{ 
-explanation of output arguments:
+[explanation of output arguments]:
 wbest: return the matrix of spatial pattern (after nnmf optimization)
 hbest: return the matrix of temporal pattern(after nnmf optimization)
 normbest: return the norm of the difference between reconstructed EMG and original EMG

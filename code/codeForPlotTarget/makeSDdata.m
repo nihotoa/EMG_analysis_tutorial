@@ -1,3 +1,17 @@
+%{
+[explanation of this func]:
+Function to add mean and std information for all sessions(date) to 'P_ref'
+
+[input arguments]
+P_ref: [struct], contains various information around the timing to be focused on
+session_num: [double], number of selected files
+element_num: [double], number of elements (EMG or synergy)
+
+[output arguments]
+P_ref: [struct], contains various information around the timing to be focused on
+
+%}
+
 function [P_ref] = makeSDdata(P_ref, session_num, element_num)
 
 % create empty array to store data

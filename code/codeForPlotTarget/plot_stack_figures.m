@@ -1,3 +1,14 @@
+%{
+[explanation of this func]:
+Function to plot stack figure. 
+
+[input arguments]
+data_str:[struct], contains various parameters necessary for plot
+m:[double], index of element
+
+[output arguments]
+
+%}
 function [] = plot_stack_figures(data_str, m)
     % stores the field of a structure in a variable of the same name
     field_names = fieldnames(data_str);

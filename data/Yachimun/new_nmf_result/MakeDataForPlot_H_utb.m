@@ -15,7 +15,7 @@ location:
 
 [procedure]
 pre: dispNMF_W.m
-post: plotTarget.m (EMG_analysis/data/plotTarget.m)
+post: plotTarget.m 
 
 [caution!!]
 In order to use the function 'resample', 'signal processing toolbox' must be installed
@@ -30,8 +30,7 @@ In order to use the function 'resample', 'signal processing toolbox' must be ins
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% set param
 monkeyname = 'F';  % Name prefix of the folder containing the synergy data for each date
-synergy_type = 'post';  % Whether to analyse pre or post synergies. ('pre' / 'post')
-% group_num = 2;
+term_type = 'pre';  % Which period synergies do you want to plot?
 synergy_num = 4; % number of synergy you want to analyze
 save_data = 1; % whether you want to save data (basically, set 1)
 
@@ -49,8 +48,8 @@ data_folders = dir(pwd);
 folderList = {data_folders([data_folders.isdir]).name};
 Allfiles_S = folderList(startsWith(folderList, monkeyname));
 
-% Further refinement by synergy_type
-switch synergy_type
+% Further refinement by term_type
+switch term_type
     case 'pre'
         Allfiles_S = Allfiles_S(1:4);
     case 'post'

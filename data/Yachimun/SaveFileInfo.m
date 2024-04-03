@@ -49,4 +49,5 @@ for tarN = 1:length(tarsessions)
     makefold(common_save_fold_path)
     save(fullfile(common_save_fold_path, [monkeyname num2str(tarsessions(tarN)) '_' taskname '.mat']), 'fileInfo')
 end
+disp(['data is saved in ' common_save_fold_path])
 

@@ -1,10 +1,19 @@
 %{
-セッション(日付)ごとに1トライアルの平均の長さが違うので、resampleして(時間正規化して)セッション間の長さを統一するための関数
-使われている関数:
-plotEasyData_utb.m(runningEasyfuncの中で使われている)
+[explanation of this func]:
+function to unify data length differences between sessions(dates) or trials by resampling.
+This function is used in:
+plotEasyData_utb.m
 MakeDataForPlot_H_utb
 plotTarget.m
+
+[input arguments]
+DATA: [cell array or double array], each cell contains activity data
+tarLength: [double], Unified length. Perform resampling to this length
+
+[output arguments]
+alignedData: [cell array or double array], this is equal to 'DATA' resampled to 'tarLength'
 %}
+
 function [alignedDATA]=AlignDatasets(DATA, tarLength)
 %{
 explanation: change the construction of data & resample data(adjast to 'tarLength')

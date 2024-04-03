@@ -1,53 +1,138 @@
 ## Overview
 This repository provides codes & some files for tutorials on EMG analysis and muscle synergy analysis
 
+***
+
 ## How to analyze
 
-  - **preliminary preparations** <br>
+  - <span style="font-size: 18px;">**preliminary preparations**</span>
 
-    * Please place all recorded data file directly under the monkey name folder.<br>
-    (ex.) EMG_analysis_turorial/data/Yachimun/<br>
+    - Please place all recorded data file directly under the monkey name folder.
 
-      * How to obtain recorded data:<br>
-        To obtain the dataset, please contact the email address given at the end of this README.
+      (ex.) EMG_analysis_turorial/data/Yachimun/
 
-    * Understand the directory structure of this repository<br>
+      - (To obtain the dataset, <strong>please contact the email address given at the end of this README.</strong>)
+
+    <!-- sort image -->
+    <style>
+      .centered-image{
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        padding: 20px
+      }
+    </style>
+
+    <img src="images/explanation1.jpg" alt="explanation1" width="80%" class="centered-image">
+
+    - Understand the directory structure of this repository
+
       The documentation in the code assumes that you understand this folder structure.<br>
-      The folder structre is shown in the following figure.<br>
-      <ここにフォルダ構造のツリーを書いていく>
+      The Shematic diagram of folder structure is shown in the following figure. (This folder structure is tentative version. It may change in future updates)
 
-    * Please add 'code' and 'data' folder to PATH in MATLAB
+      ```
+      EMG_analysis_tutorial
+        │
+        ├ README.md
+        │
+        ├ analysis_data_days(Yachimun).csv
+        │
+        ├ code
+        │　├ filterBat_SynNMFPre.m
+        │　├ makeEMGNMFbtc_Oya.m
+        │　├ (other function files)
+        │　│
+        │　├ VBSR
+        │　│　└ (some function files)
+        │　│ 　　
+        │　├ codeForPlotTarget　
+        │　│　└ (some function files)
+        │　│
+        │　└ ttb
+        │　　 └ (some function files)
+        │
+        ├ data
+        │　├ runnningEasyfunc.m
+        │　├ plotTarget.m
+        │　├ SAVE4NMF.m
+        │　│
+        │　└ Yachimun
+        │      ├ SaveFileinfo.m
+        │      ├ SYNERGYPLOT.m
+        │      ├ (other function files)
+        │　 　　│
+        │      └ new_nmf_result
+        │      　　├ dispNMF_W.m
+        │      　　└ MakeDataForPlot_H_utb.m
+        │
+        └ images
+        　　└  (some images)
 
+      ```
 
-  - **EMG_analysis** <br>
+    - Please add 'code' and 'data' folder to PATH in MATLAB
+
+  - <span style="font-size: 18px;">**EMG analysis**</span>
+
     If you want to perform EMG analysis, please execute the functions in the following procedure
-    1. **Run 'SaveFileinfo.m'**
 
-      - **file location**: EMG_analysis_turorial/data/monkeyname/
+    1. **'SaveFileinfo.m'**
 
-      - **function**: Save data for merging measurement data.
+      - **Role:** Save data for merging measurement data.
 
-    2. **Run 'runnningEasyfunc.m'**
-      - **file location**: EMG_analysis_turorial/data/
+    2. **'runnningEasyfunc.m'**
 
-      - **function**: 3 function
+      - **Role:** 3 roles
 
-        1. merge data & generate timing_data
+        1. Merge data & generate timing_data
 
-        2. evaluate cross-talk
+        2. Evaluate cross-talk
 
-        3. filtering & Time Normalization of Tasks
+        3. Filtering EMG & performing Time Normalization for each task trial
 
-    3. **Run 'plotTarget.m'**
+    3. **'plotTarget.m'**
 
-      - **file location**: EMG_analysis_turorial/data/
+      - **Role:** Plot filtered EMG
 
-      - **function**: Plot EMG data
 
-  - **Synergy_analysis**
+  <!-- - **Muscle synergy analysis** -->
+  - <span style="font-size: 18px;">**Muscle synergy analysis**</span>
 
-    1. **Run 'SaveFileinfo.m'** <br>
-      この後にシナジー解析の順番を書いていく
+    If you want to perform muscle synergy analysis, please execute the functions in the following procedure
+
+    1. **'SaveFileinfo.m'**
+
+      - **Role:** Same process as EMG analysis.
+
+    2. **'SAVE4NMF.m'**
+
+      - **Role:** Merge & save EMG data for each muscle
+
+    3. **'filterBat_SynNMFPre.m'**
+
+      - **Role:** Filter & save EMG data for each muscle.
+
+    4. **'makeEMGNMFbtc_Oya.m'**
+
+      - **Role:** Perform muscle synergy analysis with using filtered EMG.
+
+    5. **'SYNERGYPLOT.m'**
+
+      - **Role:** Plot the results of the muscle synergy analysis for each experimental day.
+
+    6. **'dispNMF_W.m'**
+
+      - **Role:** Plot the spatial pattern of muscle synergy on all experimental days.
+
+    7. **'MakeDataForPlot_H_utb.m'**
+
+      - **Role:** Processing data on temporal patterns of muscle synergy(e.g., trial-specific cutouts, time normalization, etc.).
+
+    8. **'plotTarget.m'**
+
+      - **Role:** Plot temporal patterns of muscle synergy on all experimental days.
+
+***
 
 ## Remarks
   The following information is written at the beginning of every code. Please refer to them and proceed with the analysis.
@@ -58,11 +143,23 @@ This repository provides codes & some files for tutorials on EMG analysis and mu
     The role of code is briefly described in this section
 
   - **Saved data location**<br>
-    This section contains details of the data and where it is saved
+    This section contains details of data to be saved and where these data are saved
 
   - **Procedure**<br>
-    This section describes which code should be executed before and after the target code.
+    This section describes which code should be executed before and after this code.
+
+***
+
+## Other information
+
+  - If all datasets are processed, the total size of the output data and figures will be about 100GB. Therefore, please make sure that you have enough storage on your device before you start analysis
+
+  - The dates adopted as experimental dates are summarized in 'analysis_data_days(Yachimun).csv'. Please refer this
+
+  - Details of the experiment and analysis outline are distributed separately. If you would like to get these information, <strong>please contact at the email address at the end of this README.</strong>
+
+***
 
 ## Contact
 
-  if you need the dataset for analysis or have any questions, please feel free to contact us at nao-ota@ncnp.go.jp
+  If you want to get the dataset for analysis or have any questions, please feel free to contact me at nao-ota@ncnp.go.jp

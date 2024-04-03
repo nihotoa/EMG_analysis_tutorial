@@ -1,3 +1,17 @@
+%{
+[explanation of this func]:
+
+[input arguments]
+figure_str: [struct], contains some figure object
+data_str:[struct], contains various parameters necessary for plot
+trim_type:[char ('each_timing' / 'whole_task')], char to distinguish data to be extracted
+fig_type: [char ('stack' / 'std')],  char to distinguish the type of diagram to be plotted
+
+[output arguments]
+figure_str: [struct], contains some figure object
+
+%}
+
 function [figure_str] = plot_figures(figure_str, data_str, trim_type, fig_type)
     % (if timing_id == last_timing) change center persentage from 100 to 0
     if strcmp(trim_type, 'each_timing')
