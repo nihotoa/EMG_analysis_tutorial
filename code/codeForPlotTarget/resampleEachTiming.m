@@ -1,6 +1,20 @@
+
 %{
-=> セッション(日付)ごとに各タイミング付近の切り出しデータ(ref_Ptrig)の長さが違うので、resampleして(時間正規化して)統一するための関数
-戻り値は構造体の中の空のcell配列に入る.(時間正規化した各セッションの各筋電(もしくはシナジー)のデータが格納される)
+[explanation of this func]:
+Function to eliminate the difference of trial data length between sessions(dates) by resampling
+Processed data is added to 'ref_Ptrig'
+
+[input arguments]
+Allfiles_S: [cell array], list of selected file name
+ref_Ptrig: [struct], contains various information around the timing to be focused on
+ref_timing: [double], timing number to be focused on
+nomalizeAmp: [double (0/1)],  whether to normalize amplitude
+select_folder_path: [char], [char], Absolute path to the location which exists 'Pdata' to be referenced
+element_num: [double], number of elements (EMG or synergy)
+
+[output arguments]
+ref_Ptig: [struct], contains various information around the timing to be focused on
+
 %}
 
 function [ref_Ptrig] = resampleEachTiming(Allfiles_S, ref_Ptrig, ref_timing, nomalizeAmp, select_folder_path, element_num)  

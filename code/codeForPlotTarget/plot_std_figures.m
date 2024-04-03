@@ -1,3 +1,15 @@
+%{
+[explanation of this func]:
+Function to plot mean +- std figure. 
+
+[input arguments]
+data_str:[struct], contains various parameters necessary for plot
+m:[double], index of element
+
+[output arguments]
+
+%}
+
 function [] = plot_std_figures(data_str, m)
     % stores the field of a structure in a variable of the same name
     field_names = fieldnames(data_str);

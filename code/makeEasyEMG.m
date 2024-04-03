@@ -10,6 +10,15 @@ input arguments:
 All of these input arguments can be obtained by executing 'fileInfo.m'
 %}
 
+%{
+[explanation of this func]:
+
+[input arguments]
+
+[output arguments]
+
+%}
+
 function [AllData_EMG, TimeRange, EMG_Hz] = makeEasyEMG(monkeyname, xpdate, file_num, real_name)
 %% Make EMG set(define muscle names for each electrode)
 switch monkeyname

@@ -3,28 +3,37 @@
 %coded by Naoki Uchida
 % last modification : 2024.3.14(by Ohta)
 
-[Your operation]
-1. Please complete the steps up to pre-procedure (refer to below ([procedure]))
-2. Go to the directory named 'data' (directory where this code exists)
-3. Change some parameters (please refer to 'set param' section)
-4. Please run this code & select data by following guidance (which is displayed in command window after Running this code)
+[role of this code]
+plot EMG (or activty pattern of muslcle Synergy) around each timing and save as figure 
+
+[your operation]
+1. Go to the directory named 'data' (directory where this code exists)
+2. Change some parameters (please refer to 'set param' section)
+3. Please run this code & select data by following guidance (which is displayed in command window after Running this code)
 
 [role of this code]
-1. plot EMG (or activty pattern of muslcle Synergy) around each timing and save as figure 
-2. Preapare data for cross-correlation analysis
+Plot muscle synergies extracted from EMG for each exoerimental day
+
+[Saved data location]
+location:
+    EMG_analysis_tutorial/data/Yachimun/easyData/P-DATA/<F170516toF170524_4>/
+    (The area enclosed by <> depends on the folder selected)
+
+file name: 
+    data:aligned_EMG_data.mat (This file contains the general data needed for plotting (e.g. cut-out area, cut-out activity data, etc.)
+    figure: Many diagrams are saved with the '.fig' and '.png' extensions. Please check the output results
+    
+
+[procedure]
+pre : MakeDataForPlot_H_utb.m or runnningEasyfunc.m
+post: nothing
 
 [caution!!]
 1. Sometimes the function 'uigetfile' is not executed and an error occurs
 -> please reboot MATLAB
 2. Do not select date belong to 'PreDays' when you use pColor as 'C'
 
-[procedure]
-pre : MakeDataForPlot_H_utb.m or runnningEasyfunc.m
-
-[改善点]
-ドキュメンテーション関連
-・日本語部分を無くす
-・README.mdのフォーマットに従ってドキュメンテーションを書く
+[Improvement points(Japanaese)]
 
 [Remind(Japanese)]
 ・save_dataのセクションを消した。(チュートリアルで必要がないから)
@@ -40,7 +49,7 @@ realname = 'Yachimun'; % monkey name 'Yachimun'/'SesekiL'/'Wasa'
 monkeyname = 'F'; % prefix of Raw data(ex) 'Se'/'Ya'/'F'/'Wa' 
 plot_all = 1; % whether you want to plot figure focus on 'whole task'
 plot_each_timing = 1; % whether you want to plot figure focus on 'each timing'
-plot_type = 'Synergy';  % the data which you want to plot -> 'EMG' or 'Synergy'
+plot_type = 'EMG';  % the data which you want to plot -> 'EMG' or 'Synergy'
 pColor = 'K';  % select 'K'(black plot) or 'C'(color plot) 
 normalizeAmp = 0; % normalize Amplitude a
 YL = Inf; % (if nomalize Amp == 0) ylim of graph

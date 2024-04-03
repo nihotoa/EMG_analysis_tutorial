@@ -11,20 +11,20 @@
 
 [Saved data location]
     As for figure:
-        Yachimun/new_nmf_result/syn_figures/F170516to170526_4/      (if you selected 4days from 170516 to 170526)
+        Yachimun/new_nmf_result/syn_figures/F170516to170526_4/      (if you selected 'pre' for 'term_type')
 
     As for synergy order data:
-        Yachimun/new_nmf_result/order_tim_list/F170516to170526_4/     (if you selected 4days from 170516 to 170526)
+        Yachimun/new_nmf_result/order_tim_list/F170516to170526_4/     (if you selected 'pre' for 'term_type')
 
     As for synergy W data (for anova):
-        Yachimun/new_nmf_result/W_synergy_data
+        Yachimun/new_nmf_result/W_synergy_data/
 
     As for synergy W data:
-        Yachimun/new_nmf_result/spatial_synergy_data/dist-dist
+        Yachimun/new_nmf_result/spatial_synergy_data/dist-dist/
 
 [procedure]
 pre: SYNERGYPLOT.m
-post: MakeDataForPlot_H_utb(EMG_analysis/data/Yachimun/new_nmf_result/MakeDataForPlot_H_utb)
+post: MakeDataForPlot_H_utb.m
 
 [Improvement points(Japanaese)]
 %}
@@ -33,7 +33,7 @@ clear;
 
 %% set param
 monkeyname = 'F';  % Name prefix of the folder containing the synergy data for each date
-synergy_type = 'pre';  % Whether to analyse pre or post synergies. ('pre' / 'post')
+term_type = 'post';  % Which period synergies do you want to plot?
 syn_num = 4; % number of synergy you want to analyze
 save_WDaySynergy = 1;% Whether to save synergy W (to be used for ANOVA)
 save_data = 1; % Whether to store data on synergy orders in 'order_tim_list' folder (should basically be set to 1).
@@ -55,8 +55,8 @@ data_folders = dir(pwd);
 folderList = {data_folders([data_folders.isdir]).name};
 Allfiles_S = folderList(startsWith(folderList, monkeyname));
 
-% (you don't need to change)Further refinement by synergy_type
-switch synergy_type
+% (you don't need to change)Further refinement by term_type
+switch term_type
     case 'pre'
         Allfiles_S = Allfiles_S(1:4);
     case 'post'

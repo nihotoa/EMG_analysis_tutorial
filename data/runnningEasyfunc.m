@@ -30,7 +30,7 @@ file_name: ~_Pdata.mat:  contains some data for synergy analysis (timing_data, t
 
 [procedure]
 pre: SaveFileInfo.m
-post: plotTarget.m(EMG analysis) or SYNERGYPLOT.m(EMG analysis)
+post: plotTarget.m(EMG analysis) or SYNERGYPLOT.m(synergy analysis)
 
 [caution!!]
 Sometimes the function 'uigetfile' is not executed and an error occurs
@@ -39,7 +39,7 @@ Sometimes the function 'uigetfile' is not executed and an error occurs
 [Improvement points(Japanaese)]
 makeEasyData_all/makeEasyTiming内のSu, Seの条件分岐の意味を把握していない => Sesekiで試す or チュートリアル用のリポジトリを作った後に消す
 ・この関数自体も、この関数の中で使われている関数も,タイミングの数が4つであることを前提としているので、可変長にも対応できるように変更する
-・この関数の中で使われている関数の中で使われているplotEasyData_utbとMakeDataForPlot_H_utb.mが激似なので改善する
+・この関数の中で使われている関数の中で使われているplotEasyData_utbとMakeDataForPlot_H_utb.mが激似なので関数ファイルを作って外から呼び出すように変更する
 %}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 clear 

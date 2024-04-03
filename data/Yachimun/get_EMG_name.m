@@ -5,6 +5,17 @@ removing the string common to all elements from the 'TargetName' (cell array)
 & retrun it as 'EMGs'
 %}
 
+%{
+explanation of this func:
+Extract the numerical part from each element of InputDirs(cell array) and create a list of double array
+
+input arguments:
+InputDirs: cell array, Each cell contains the string type of the folder name.' You can get it by using 'uiselect'
+
+output arguments:
+days: double array, Each element contains a date of double type
+%}
+
 % finding common string
 % (since the process contents are connected by '-', find common string by concatenating the first '-' and the following)
 ref_name = TargetName{1};

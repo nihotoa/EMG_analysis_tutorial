@@ -1,10 +1,23 @@
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %{
-% coded by Naoki Uchida
-% last modification : 2024.03.12(by Ota)
-this function is used in runnningEasyfunc.m
+[explanation of this func]:
+this function is used in 'runnningEasyfunc.m'
+Perform data concatenation & filtering processing & Obtain information on each timing for EMG trial-by-trial extraction
+
+[input arguments]:
+monkeyname: [char], prefix of file
+real_name: [char], full name of monkey
+xpdate_num: [double], date of experiment
+file_num: [double list], List of numbered experimental data files for the date of interest  (ex.) [2, 4]
+save_fold: [char], 'easyData' (don't need to change)
+mE: [struct], Contains parameters on whether or not processing is performed and information on the sampling frequency after downsampling.
+task: [char], 'standard' (don't need to change)
+
+[output arguments]:
+EMGs:[cell array], The name of each EMF is stored in a char type.
+Tp: [double array], Data for each timing in each trial is stored.
+Tp3: [double array], Data for each timing in each trial is stored.
 %}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 function [EMGs,Tp,Tp3] = makeEasyData_all(monkeyname, real_name, xpdate_num, file_num, save_fold, mE, task)
 %% set parameters
 make_EMG = mE.make_EMG;

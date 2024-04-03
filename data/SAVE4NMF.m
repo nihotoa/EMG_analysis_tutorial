@@ -1,7 +1,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %{
 [your operation]
-1. Go to the directory named 'Data' (directory where this code exists)
+1. Go to the directory named 'data' (directory where this code exists)
 2. Change some parameters (please refer to 'set param' section)
 3. Please run this code
 
@@ -67,6 +67,102 @@ end
 
 % [role of this function] concatenate experiment data and save each EMG as individual file
 function [] = MakeData4nmf(monkeyname, real_name, xpdate, file_num, task, param_struct)
+
+% Store the name of the muscle corresponding to each electrode in the cell array
+switch monkeyname
+    case 'Wa'%Wasa
+        % which EMG channels will be imported and/or filtered (channels are numbered according to the output file, not the AO original channel ID)
+        EMGs=cell(14,1) ;
+        EMGs{1,1}= 'Delt';
+        EMGs{2,1}= 'Biceps';
+        EMGs{3,1}= 'Triceps';
+        EMGs{4,1}= 'BRD';
+        EMGs{5,1}= 'cuff';
+        EMGs{6,1}= 'ED23';
+        EMGs{7,1}= 'ED45';
+        EMGs{8,1}= 'ECR';
+        EMGs{9,1}= 'ECU';
+        EMGs{10,1}= 'EDC';
+        EMGs{11,1}= 'FDS';
+        EMGs{12,1}= 'FDP';
+        EMGs{13,1}= 'FCU';
+        EMGs{14,1}= 'FCR';
+    case 'Ya'%Yachimun
+        % which EMG channels will be imported and/or filtered (channels are numbered according to the output file, not the AO original channel ID)
+        EMGs=cell(12,1) ;
+        EMGs{1,1}= 'FDP';
+        EMGs{2,1}= 'FDSprox';
+        EMGs{3,1}= 'FDSdist';
+        EMGs{4,1}= 'FCU';
+        EMGs{5,1}= 'PL';
+        EMGs{6,1}= 'FCR';
+        EMGs{7,1}= 'BRD';
+        EMGs{8,1}= 'ECR';
+        EMGs{9,1}= 'EDCprox';
+        EMGs{10,1}= 'EDCdist';
+        EMGs{11,1}= 'ED23';
+        EMGs{12,1}= 'ECU';
+    case 'F' %Yachimun
+        % which EMG channels will be imported and/or filtered (channels are numbered according to the output file, not the AO original channel ID)
+        EMGs=cell(12,1) ;
+        EMGs{1,1}= 'FDP';
+        EMGs{2,1}= 'FDSprox';
+        EMGs{3,1}= 'FDSdist';
+        EMGs{4,1}= 'FCU';
+        EMGs{5,1}= 'PL';
+        EMGs{6,1}= 'FCR';
+        EMGs{7,1}= 'BRD';
+        EMGs{8,1}= 'ECR';
+        EMGs{9,1}= 'EDCprox';
+        EMGs{10,1}= 'EDCdist';
+        EMGs{11,1}= 'ED23';
+        EMGs{12,1}= 'ECU';
+    case 'Su'%Suruku
+        % which EMG channels will be imported and/or filtered (channels are numbered according to the output file, not the AO original channel ID)
+        EMGs=cell(12,1) ;
+        EMGs{1,1}= 'FDS';
+        EMGs{2,1}= 'FDP';
+        EMGs{3,1}= 'FCR';
+        EMGs{4,1}= 'FCU';
+        EMGs{5,1}= 'PL';
+        EMGs{6,1}= 'BRD';
+        EMGs{7,1}= 'EDC';
+        EMGs{8,1}= 'ED23';
+        EMGs{9,1}= 'ED45';
+        EMGs{10,1}= 'ECU';
+        EMGs{11,1}= 'ECR';
+        EMGs{12,1}= 'Deltoid';
+   case 'Se'%Seseki
+        % which EMG channels will be imported and/or filtered (channels are numbered according to the output file, not the AO original channel ID)
+        EMGs=cell(12, 1) ;
+        EMGs{1,1}= 'EDC';
+        EMGs{2,1}= 'ED23';
+        EMGs{3,1}= 'ED45';
+        EMGs{4,1}= 'ECU';
+        EMGs{5,1}= 'ECR';
+        EMGs{6,1}= 'Deltoid';
+        EMGs{7,1}= 'FDS';
+        EMGs{8,1}= 'FDP';
+        EMGs{9,1}= 'FCR';
+        EMGs{10,1}= 'FCU';
+        EMGs{11,1}= 'PL';
+        EMGs{12,1}= 'BRD';
+    case 'Ma'
+        Mn = 8;
+        EMGs=cell(Mn,1) ;
+        EMGs{1,1}= 'EDC';
+        EMGs{2,1}= 'ECR';
+        EMGs{3,1}= 'BRD_1';
+        EMGs{4,1}= 'FCU';
+        EMGs{5,1}= 'FCR';
+        EMGs{6,1}= 'BRD_2';
+        if Mn == 8
+           EMGs{7,1}= 'FDPr';
+           EMGs{8,1}= 'FDPu';
+        end
+end
+EMG_num = length(EMGs);
+
 % set param
 save_fold = param_struct.save_fold;
 downsample = param_struct.downsample;

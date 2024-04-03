@@ -41,7 +41,7 @@ else
 end
 % get the name of the floder that exists directly under 'Parent dir'
 InputDirs   = dirdir(ParentDir);
-disp('【Plese select day fold (which contains the data you want to filter】)')
+disp('【Plese select all day fold (which contains the data you want to filter】)')
 InputDirs   = uiselect(InputDirs,1,'??????????Experiment???I???????????????B');
 
 if(isempty(InputDirs))
@@ -51,7 +51,7 @@ end
 InputDir    = InputDirs{1};
 
 Tarfiles    = sortxls(dirmat(fullfile(ParentDir,InputDir)));
-disp('【Please select all muscle data which you want to filter】')
+disp('【Please select all muscle data(<muscle name>(uV).mat) which you want to filter】')
 Tarfiles    = uiselect(Tarfiles,1,'Target?t?@?C?????I???????????????i?????I?????j?B');
 if(isempty(Tarfiles))
     disp('User pressed cancel.')

@@ -1,7 +1,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %{
 [your operation]
-1. Go to the directory named monkey name (ex.) if you want to analyze Yachimun's data, please go to 'EMG_analysis/data/Yachimun'
+1. Go to the directory named monkey name (directory in which this file exists.) (ex.) if you want to analyze Yachimun's data, please go to 'EMG_analysis_tutorial/data/Yachimun'
 2. Please change parameters
 
 [role of this code]
@@ -13,14 +13,13 @@ file name:
 
 [procedure]
 pre: makeEMGNMF_btcOya.m
-post: dispNMF_W (path:EMG_analysis/data/Yachimun/new_nmf_result/dispNMF_W.m), (This file is not yet fully described)
+post: dispNMF_W.m
 
 [caution!!]
 In order to complete this function, in addtion to the analysis flow of synergy analysis, it is necessary to finish the flow up to 'runningEasyfunc.m' of EMG analysis
 
 [Improvement points(Japanaese)]
 注意点: タイミングデータの取得のために, EMG_analysisのフローをrunnningEasyfuncまで行う必要がある
-existを使わないようにする
 %}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 clear;

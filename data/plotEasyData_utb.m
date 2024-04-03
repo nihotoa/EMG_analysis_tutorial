@@ -1,12 +1,26 @@
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %{
-% coded by Naoki Uchida
-% modified by Naohito Ota
-% last modification : 2024.02.26
-this code is used in 'runnningEasyfunc.m'
-[role of this function]
+[explanation of this func]:
+this function is used in 'runnningEasyfunc.m'
+Cut out EMG for each trial & Focusing on various timings and cut out EMG around them
+
+[input arguments]:
+monkeyname: prefix of data
+xpdate_num: [double], date of experiment
+save_fold: [char], 'easyData', you dont need to change
+task:  [char], 'standard', you dont need to change
+real_name: [char], full name of monkey
+
+[output arguments]:
+alignedDataAVE: [cell array], each cell contains the average activity of all trials of that EMG
+alignedData: [cell array], each cell contains the cut-out EMG of all trials in that EMG
+taskRange: [double array],  range of cutout (ex.) [-50 150]
+AllT : [double], average sample size of cropped range
+Timing_ave: [double array(vector)], average number of samples it takes from 'lever1 on' to each timing
+TIME_W: [double], average sample size of trial
+Res: [struct], this contains EMG data cenreted on each timing
+D: [struct], this contains information about cutout range centered on each timing.
 %}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 function [alignedDataAVE,alignedData,taskRange,AllT,Timing_ave,TIME_W,Res,D] = plotEasyData_utb( monkeyname, xpdate_num, save_fold, task ,real_name)
 %% get informations(path of save_folder, EMG data, timing data ,etc...)
 xpdate = sprintf('%d',xpdate_num);
@@ -69,9 +83,11 @@ D.filtP = filtP;
 save(fullfile(save_fold_path, [monkeyname xpdate '_alignedData_' filtP.whose '.mat']), 'monkeyname', 'xpdate','EMGs', ...
                                           'alignedData', 'alignedDataAVE','filtP','trial_num','taskRange','Timing_ave'...
                                                   );
-
 disp(['END TO MAKE & SAVE ' monkeyname xpdate '_Plot Data']);
 end
+
+
+%% define local function
 
 function [filtData,newTiming,filtP] = filterEMG(filtData,filt_mode,SR,EMG_num,Timing)
 %{
@@ -165,6 +181,7 @@ switch filt_mode
 end
 end
 
+% --------------------------------------------------------------------------------------------------------------------------------------------
 
 function [alignedData, alignedDataAVE,AllT,Timing_ave,TIME_W] = alignData(Data_in, Timing,trial_num,pre_per,post_per, EMG_num)
 %{

@@ -1,19 +1,23 @@
-function [Y,Y_dat]  = makeEMGNMFOya(X,kf,nrep,nshuffle,alg)
 %{
-explanation of input arguments:
+[explanation of this func]:
+Perform NNMF(Non Negative Matrix Factorization) & extract muscle(it takes a lot of time!)
+Create the necessary parameters for NNMF and some empty array to store the data, and pass them to 'nnmf2.m' (function that perform NNMF)
+
+[input arguments]
 X: matrix of EMG data ([mm, nn] = size(X)], mm: number of muscle, nn: data length)
 kf: How many parts of data to divide for cross-validation
 nrep: repetition number of synergy search
 nshuffle: whether to shuffle the data
 alg: Algorithm to be used for NNMF
-%}
 
-%{
-explanation of output arguments:
+[output arguments]
 Y: structure data. matrix of spatial pattern (W) and temporal pattern (H) of synergy are stored
 Y_dat: structure data. this contains a lot of information about synergy(the type of algorithm used, on parameters and thresholds set, etc...)
-analysis()
+
 %}
+
+
+function [Y,Y_dat]  = makeEMGNMFOya(X,kf,nrep,nshuffle,alg)
 
 % set parameters
 if(nargin<2)
