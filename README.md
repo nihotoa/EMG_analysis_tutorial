@@ -78,22 +78,24 @@ This repository provides codes & some files for tutorials on EMG analysis and mu
 
     1. **'SaveFileinfo.m'**
 
-      - **Role:** Save data for merging measurement data.
+      **Role:** Save data for merging measurement data.
+      <br>
 
     2. **'runnningEasyfunc.m'**
 
-      - **Role:** 3 roles
+      **Role:** 3 roles
 
         1. Merge data & generate timing_data
 
         2. Evaluate cross-talk
 
         3. Filtering EMG & performing Time Normalization for each task trial
+        <br>
 
     3. **'plotTarget.m'**
 
-      - **Role:** Plot filtered EMG
-
+      **Role:** Plot filtered EMG
+      <br>
 
   <!-- - **Muscle synergy analysis** -->
   - <span style="font-size: 18px;">**Muscle synergy analysis**</span>
@@ -102,35 +104,42 @@ This repository provides codes & some files for tutorials on EMG analysis and mu
 
     1. **'SaveFileinfo.m'**
 
-      - **Role:** Same process as EMG analysis.
+      **Role:** Same process as EMG analysis.
+      <br>
 
     2. **'SAVE4NMF.m'**
 
-      - **Role:** Merge & save EMG data for each muscle
+      **Role:** Merge & save EMG data for each muscle
+      <br>
 
     3. **'filterBat_SynNMFPre.m'**
 
-      - **Role:** Filter & save EMG data for each muscle.
+      **Role:** Filter & save EMG data for each muscle.
+      <br>
 
     4. **'makeEMGNMFbtc_Oya.m'**
 
-      - **Role:** Perform muscle synergy analysis with using filtered EMG.
+      **Role:** Perform muscle synergy analysis with using filtered EMG.
+      <br>
 
     5. **'SYNERGYPLOT.m'**
 
-      - **Role:** Plot the results of the muscle synergy analysis for each experimental day.
+      **Role:** Plot the results of the muscle synergy analysis for each experimental day.
+      <br>
 
     6. **'dispNMF_W.m'**
 
-      - **Role:** Plot the spatial pattern of muscle synergy on all experimental days.
+      **Role:** Plot the spatial pattern of muscle synergy on all experimental days.
+      <br>
 
     7. **'MakeDataForPlot_H_utb.m'**
 
-      - **Role:** Processing data on temporal patterns of muscle synergy(e.g., trial-specific cutouts, time normalization, etc.).
+      **Role:** Processing data on temporal patterns of muscle synergy(e.g., trial-specific cutouts, time normalization, etc.).
+      <br>
 
     8. **'plotTarget.m'**
 
-      - **Role:** Plot temporal patterns of muscle synergy on all experimental days.
+      **Role:** Plot temporal patterns of muscle synergy on all experimental days.
 
 ***
 
