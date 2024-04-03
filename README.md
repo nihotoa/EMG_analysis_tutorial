@@ -13,17 +13,8 @@ This repository provides codes & some files for tutorials on EMG analysis and mu
 
       - (To obtain the dataset, <strong>please contact the email address given at the end of this README.</strong>)
 
-    <!-- sort image -->
-    <style>
-      .centered-image{
-        display: block;
-        margin-left: auto;
-        margin-right: auto;
-        padding: 20px
-      }
-    </style>
-
-    <img src="images/explanation1.jpg" alt="explanation1" width="80%" class="centered-image">
+    <!-- insert image -->
+    <img src="explanation_materials/explanation1.jpg" alt="explanation1" width="100%" style="display: block; margin-left: auto; margin-right: auto; padding: 20px">
 
     - Understand the directory structure of this repository
 
@@ -65,12 +56,15 @@ This repository provides codes & some files for tutorials on EMG analysis and mu
         │      　　├ dispNMF_W.m
         │      　　└ MakeDataForPlot_H_utb.m
         │
-        └ images
+        └ explanation_materials
         　　└  (some images)
 
       ```
 
     - Please add 'code' and 'data' folder to PATH in MATLAB
+
+    <!-- insert image -->
+    <img src="explanation_materials/explanation2.gif" alt="explanation1" width="100%" style="display: block; margin-left: auto; margin-right: auto; padding: 20px">
 
   - <span style="font-size: 18px;">**EMG analysis**</span>
 
