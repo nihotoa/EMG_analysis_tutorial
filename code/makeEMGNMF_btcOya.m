@@ -15,7 +15,7 @@ file name: selected_folder_name + .mat (ex.)F170516_standard.mat => this file co
 
 [procedure]
 pre:fitlerBat_SynNMFPre.m
-post: SYNERGYPLOT.m
+post: plotVAF.m
 
 [Improvement points(Japanaese)]
 %}

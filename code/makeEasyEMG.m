@@ -1,22 +1,18 @@
 %{
-function to concatenate EMG data
-this function is used in 'makeEasyData_all.m' & 'save4NMF.m'
-input arguments:
-    monkeyname: prefix of file name (ex.) 'F'
-    xpdate: date of experiment (ex.) 170516
-    file_num: list of file number (ex.) [2, 4]
-    real_name: full name of monkey (ex.) 'Yachimun'
-
-All of these input arguments can be obtained by executing 'fileInfo.m'
-%}
-
-%{
 [explanation of this func]:
+concanenate EMG data for 1 experiment day.
+Extract information necessary for EMG analysis(ex. TimeRange, EMG_Hz etc...) from recorded data
 
 [input arguments]
+monkeyname: [char], prefix of recorded data file
+xpdate: [char], date of experiment
+file_num: [double array], which file number corresponds to the experimental data
+real_name: [char], full name of monkey
 
 [output arguments]
-
+AllData_EMG: [double array], concatenated raw EMG data
+TimeRange: [double array], time of start and end of recording
+EMG_Hz: sampling frequency of EMG data 
 %}
 
 function [AllData_EMG, TimeRange, EMG_Hz] = makeEasyEMG(monkeyname, xpdate, file_num, real_name)
