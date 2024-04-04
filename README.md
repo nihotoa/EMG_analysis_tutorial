@@ -3,9 +3,9 @@ This repository provides codes & some files for tutorials on EMG analysis and mu
 
 ***
 
-## How to analyze
+## How to Analyze
 
-  - <span style="font-size: 18px;">**preliminary preparations**</span>
+  - <span style="font-size: 18px;">**Preliminary Preparations**</span>
 
     - Please place all recorded data file directly under the monkey name folder.
 
@@ -67,78 +67,13 @@ This repository provides codes & some files for tutorials on EMG analysis and mu
     <!-- insert image -->
     <img src="explanation_materials/explanation2.gif" alt="explanation1" width="100%" style="display: block; margin-left: auto; margin-right: auto; padding: 20px">
 
-  - <span style="font-size: 18px;">**EMG analysis**</span>
+  - <span style="font-size: 18px;">**Sequence of Analysis**</span>
 
-    If you want to perform EMG analysis, please execute the functions in the following procedure
+  The sequence of EMG analysis and muscle synergy analysis is shown inthe figure below.<br>
+  For details on the usage and processing of each code, please refer to the description at the beginning of code.
 
-    1. **'SaveFileinfo.m'**
-
-      **Role:** Save data for merging measurement data.
-      <br>
-
-    2. **'runnningEasyfunc.m'**
-
-      **Role:** 3 roles
-
-        1. Merge data & generate timing_data
-
-        2. Evaluate cross-talk
-
-        3. Filtering EMG & performing Time Normalization for each task trial
-
-    3. **'plotTarget.m'**
-
-      **Role:** Plot filtered EMG
-      <br>
-
-  <!-- - **Muscle synergy analysis** -->
-  - <span style="font-size: 18px;">**Muscle synergy analysis**</span>
-
-    If you want to perform muscle synergy analysis, please execute the functions in the following procedure
-
-    1. **'SaveFileinfo.m'**
-
-      **Role:** Same process as EMG analysis.
-      <br>
-
-    2. **'SAVE4NMF.m'**
-
-      **Role:** Merge & save EMG data for each muscle
-      <br>
-
-    3. **'filterBat_SynNMFPre.m'**
-
-      **Role:** Filter & save EMG data for each muscle.
-      <br>
-
-    4. **'makeEMGNMFbtc_Oya.m'**
-
-      **Role:** Perform muscle synergy analysis with using filtered EMG.
-      <br>
-
-    5. **'plotVAF.m'**
-
-      **Role:** Visualize the VAF value of synergy obtained by NNMF and save it as a figure
-      <br>
-
-    6. **'SYNERGYPLOT.m'**
-
-      **Role:** Plot the results of the muscle synergy analysis for each experimental day.
-      <br>
-
-    7. **'dispNMF_W.m'**
-
-      **Role:** Plot the spatial pattern of muscle synergy on all experimental days.
-      <br>
-
-    8. **'MakeDataForPlot_H_utb.m'**
-
-      **Role:** Processing data on temporal patterns of muscle synergy(e.g., trial-specific cutouts, time normalization, etc.).
-      <br>
-
-    9. **'plotTarget.m'**
-
-      **Role:** Plot temporal patterns of muscle synergy on all experimental days.
+  <!-- insert image -->
+  <img src="explanation_materials/explanation3.jpg" alt="explanation3" width="80%" style="display: block; margin-left: auto; margin-right: auto; padding: 20px">
 
 ***
 
