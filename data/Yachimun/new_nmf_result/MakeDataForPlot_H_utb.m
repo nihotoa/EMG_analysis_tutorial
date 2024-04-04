@@ -7,7 +7,6 @@
 [role of this code]
 Ecut out the temporal pattern of muscle synergy for each trial and put it into array
 Esave data which is related in displaying temporal synergy
-saved location is new_nmf_result -> synData -> (ex.)YaSyn4170630_Pdata.mat
 
 [Saved data location]
 location: 

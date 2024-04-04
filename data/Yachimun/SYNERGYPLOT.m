@@ -12,7 +12,7 @@ location: Directory youhave chosen as save folder (A dialog box will pop up duri
 file name: 
 
 [procedure]
-pre: makeEMGNMF_btcOya.m
+pre: plotVAF.m
 post: dispNMF_W.m
 
 [caution!!]
@@ -25,7 +25,7 @@ In order to complete this function, in addtion to the analysis flow of synergy a
 clear;
 %% set param
 monkeyname = 'F'; % initials that each monkey has uniquery
-synergy_num_list = [4]; % which synergy number of synergies to plot
+synergy_num_list = [4]; % which synergy number of synergies to plot(Please decide based onf VAF results)
 nmf_fold_name = 'new_nmf_result';
 each_plot = 0; % whether you want to plot spatial_pattern figure for each synergy
 

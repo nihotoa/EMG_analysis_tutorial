@@ -54,6 +54,7 @@ This repository provides codes & some files for tutorials on EMG analysis and mu
         │　 　　│
         │      └ new_nmf_result
         │      　　├ dispNMF_W.m
+        │      　　├ plotVAF.m
         │      　　└ MakeDataForPlot_H_utb.m
         │
         └ explanation_materials
@@ -84,7 +85,6 @@ This repository provides codes & some files for tutorials on EMG analysis and mu
         2. Evaluate cross-talk
 
         3. Filtering EMG & performing Time Normalization for each task trial
-        <br>
 
     3. **'plotTarget.m'**
 
@@ -116,22 +116,27 @@ This repository provides codes & some files for tutorials on EMG analysis and mu
       **Role:** Perform muscle synergy analysis with using filtered EMG.
       <br>
 
-    5. **'SYNERGYPLOT.m'**
+    5. **'plotVAF.m'**
+
+      **Role:** Visualize the VAF value of synergy obtained by NNMF and save it as a figure
+      <br>
+
+    6. **'SYNERGYPLOT.m'**
 
       **Role:** Plot the results of the muscle synergy analysis for each experimental day.
       <br>
 
-    6. **'dispNMF_W.m'**
+    7. **'dispNMF_W.m'**
 
       **Role:** Plot the spatial pattern of muscle synergy on all experimental days.
       <br>
 
-    7. **'MakeDataForPlot_H_utb.m'**
+    8. **'MakeDataForPlot_H_utb.m'**
 
       **Role:** Processing data on temporal patterns of muscle synergy(e.g., trial-specific cutouts, time normalization, etc.).
       <br>
 
-    8. **'plotTarget.m'**
+    9. **'plotTarget.m'**
 
       **Role:** Plot temporal patterns of muscle synergy on all experimental days.
 
